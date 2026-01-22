@@ -1,4 +1,4 @@
-package com.minicollaborationboard.domain.ticket;
+package com.minicollaborationboard.domain.ticket.entity;
 
 public enum TicketStatus {
     TODO,

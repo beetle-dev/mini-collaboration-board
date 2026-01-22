@@ -1,6 +1,6 @@
-package com.minicollaborationboard.domain.ticket;
+package com.minicollaborationboard.domain.ticket.entity;
 
-import com.minicollaborationboard.domain.common.BaseEntity;
+import com.minicollaborationboard.global.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
