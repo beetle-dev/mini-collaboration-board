@@ -1,18 +1,21 @@
-package com.minicollaborationboard.domain.comment;
+package com.minicollaborationboard.domain.board.entity;
 
-import com.minicollaborationboard.domain.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.sql.Timestamp;
+
 @Entity
-public class Comment extends BaseEntity {
+public class BoardMember {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String content;
-    private Long authorId;
-    private Long ticketId;
+    private BoardMemberRole role;
+    private Long boardId;
+    private Long userId;
+    private Timestamp joinedAt;
+
 }

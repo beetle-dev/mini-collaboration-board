@@ -1,4 +1,4 @@
-package com.minicollaborationboard.domain.user;
+package com.minicollaborationboard.domain.user.entity;
 
 public enum UserStatus {
     ACTIVE,

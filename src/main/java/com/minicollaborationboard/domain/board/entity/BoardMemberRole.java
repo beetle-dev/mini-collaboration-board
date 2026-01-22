@@ -1,4 +1,4 @@
-package com.minicollaborationboard.domain.board;
+package com.minicollaborationboard.domain.board.entity;
 
 public enum BoardMemberRole {
     OWNER,
