@@ -23,13 +23,4 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
-
-
-    @GetMapping("/test")
-    public ResponseEntity<Void> test() {
-
-        System.out.println("테스트 호출");
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
 }

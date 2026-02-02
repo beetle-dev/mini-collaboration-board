@@ -11,4 +11,5 @@ public class ClaimsResDto {
 
     private String username;
     private String role;
+    private String uuid;
 }

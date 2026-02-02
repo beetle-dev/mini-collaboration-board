@@ -10,8 +10,17 @@ spring:
       ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: tru
 
   jwt:
     secret: 37qNKNvZ3i3dlxiEAEbPrgIEi2xpAI8LJkyTkIPZNg2 # todo AWS 처리
     access-expiration: 36000000
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
 

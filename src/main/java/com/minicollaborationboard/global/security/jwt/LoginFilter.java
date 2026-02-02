@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -38,13 +39,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
 
+        String uuid = customUserDetails.getUuid().toString();
         String username = customUserDetails.getUsername();
         String role = authResult.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
                 .orElse(null);
 
-        String token = jwtUtil.createJwt(username, role);
+        String token = jwtUtil.createJwt(uuid, username, role);
 
         response.setHeader("Authorization", "Bearer " + token);
     }
