@@ -2,11 +2,11 @@ package com.minicollaborationboard.domain.user.entity;
 
 import com.minicollaborationboard.global.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
+import java.util.UUID;
+
+@ToString
 @Getter
 @Entity
 @Builder
@@ -20,6 +20,7 @@ public class User extends BaseEntity {
     private String email;
     private String password;
     private String name;
+    private String uuid;
 
     @Enumerated(EnumType.STRING)
     private UserStatus status;

@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
@@ -29,6 +30,7 @@ public class JwtUtil {
         var payload = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
 
         return ClaimsResDto.builder()
+                .uuid(payload.get("uuid", String.class))
                 .username(payload.get("username", String.class))
                 .role(payload.get("role", String.class))
                 .build();
@@ -49,9 +51,10 @@ public class JwtUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
-    public String createJwt(String username, String role) {
+    public String createJwt(String uuid, String username, String role) {
 
         return Jwts.builder()
+                .claim("uuid", uuid)
                 .claim("username", username)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))

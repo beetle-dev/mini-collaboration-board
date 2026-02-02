@@ -5,9 +5,13 @@ import com.minicollaborationboard.domain.auth.repository.UserRepository;
 import com.minicollaborationboard.domain.user.entity.Role;
 import com.minicollaborationboard.domain.user.entity.User;
 import com.minicollaborationboard.domain.user.entity.UserStatus;
+import com.minicollaborationboard.global.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +37,17 @@ public class AuthService {
                 .name(name)
                 .status(UserStatus.ACTIVE)
                 .role(Role.ROLE_USER)
+                .uuid(UUID.randomUUID().toString())
                 .build();
 
         userRepository.save(user);
+    }
+
+    public Long getUserId() {
+
+        User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+        String userUuid = user.getUuid();
+
+        return userRepository.findByUuid(userUuid).getId();
     }
 }

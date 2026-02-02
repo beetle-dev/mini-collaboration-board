@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -25,14 +27,25 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
+    private final List<String> ignorePath = List.of("/login", "/signup");
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        String path = request.getRequestURI();
+
+        if (ignorePath.contains(path)) {
+
+            filterChain.doFilter(request, response);
+
+            return;
+        }
 
         String authorization = request.getHeader("Authorization");
 
         if (authorization == null || !authorization.startsWith("Bearer ")) {
 
-            filterChain.doFilter(request, response);
+            customAuthenticationFailureHandler.onAuthenticationFailure(request, response, new BadCredentialsException("유효하지 않은 토큰입니다."));
 
             return;
         }
@@ -47,6 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     .email(claimsResDto.getUsername())
                     .role(Role.valueOf(claimsResDto.getRole()))
                     .password("temppassword")
+                    .uuid(claimsResDto.getUuid())
                     .build();
 
             CustomUserDetails customUserDetails = new CustomUserDetails(user);
