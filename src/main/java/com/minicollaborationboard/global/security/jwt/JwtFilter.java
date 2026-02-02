@@ -4,16 +4,17 @@ import com.minicollaborationboard.domain.user.entity.Role;
 import com.minicollaborationboard.domain.user.entity.User;
 import com.minicollaborationboard.global.security.dto.ClaimsResDto;
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
+import com.minicollaborationboard.global.security.handler.CustomAuthenticationFailureHandler;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -54,10 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         } catch (JwtException e) {
 
-            // todo 핸들러 처리
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json; charset=UTF-8");
-            response.getWriter().write("{\"status\":401,\"code\":\"INVALID_TOKEN\",\"message\":\"유효하지 않거나 만료된 토큰입니다.\"}");
+            customAuthenticationFailureHandler.onAuthenticationFailure(request, response, new BadCredentialsException("유효하지 않은 토큰입니다."));
 
             return;
         }
