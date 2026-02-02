@@ -1,11 +1,9 @@
 package com.minicollaborationboard.domain.ticket.entity;
 
 import com.minicollaborationboard.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,9 +14,11 @@ public class Ticket extends BaseEntity {
 
     private String title;
     private String description;
+
+    @Enumerated(EnumType.STRING)
     private TicketStatus status;
     private int priority;
-    private Date dueDate;
+    private LocalDateTime dueDate;
     private Long boardId;
     private Long assigneeId;
 

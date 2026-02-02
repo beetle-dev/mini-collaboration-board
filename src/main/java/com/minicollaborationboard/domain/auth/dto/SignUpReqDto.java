@@ -3,7 +3,7 @@ package com.minicollaborationboard.domain.auth.dto;
 import lombok.Data;
 
 @Data
-public class SingUpReqDto {
+public class SignUpReqDto {
 
     private String email;
     private String password;

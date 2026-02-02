@@ -1,10 +1,11 @@
 package com.minicollaborationboard.domain.auth.service;
 
-import com.minicollaborationboard.domain.auth.dto.SingUpReqDto;
+import com.minicollaborationboard.domain.auth.dto.SignUpReqDto;
 import com.minicollaborationboard.domain.auth.repository.UserRepository;
 import com.minicollaborationboard.domain.user.entity.Role;
 import com.minicollaborationboard.domain.user.entity.User;
 import com.minicollaborationboard.domain.user.entity.UserStatus;
+import com.minicollaborationboard.global.exception.DuplicateResourceException;
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void signUp(SingUpReqDto signUpReqDto) {
+    public void signUp(SignUpReqDto signUpReqDto) {
 
         String email = signUpReqDto.getEmail();
         String password = signUpReqDto.getPassword();
@@ -28,7 +29,7 @@ public class AuthService {
 
         if (userRepository.existsByEmail(email)) {
 
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new DuplicateResourceException("이미 존재하는 이메일입니다.");
         }
 
         User user = User.builder()
