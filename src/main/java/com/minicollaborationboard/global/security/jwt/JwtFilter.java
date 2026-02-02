@@ -2,7 +2,9 @@ package com.minicollaborationboard.global.security.jwt;
 
 import com.minicollaborationboard.domain.user.entity.Role;
 import com.minicollaborationboard.domain.user.entity.User;
+import com.minicollaborationboard.global.security.dto.ClaimsResDto;
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,26 +37,30 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String token = authorization.split(" ")[1];
 
-        if (jwtUtil.isExpired(token)) {
+        try {
 
-            filterChain.doFilter(request, response);
+            ClaimsResDto claimsResDto = jwtUtil.validateToken(token);
+
+            User user = User.builder()
+                    .email(claimsResDto.getUsername())
+                    .role(Role.valueOf(claimsResDto.getRole()))
+                    .password("temppassword")
+                    .build();
+
+            CustomUserDetails customUserDetails = new CustomUserDetails(user);
+
+            Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        } catch (JwtException e) {
+
+            // todo 핸들러 처리
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json; charset=UTF-8");
+            response.getWriter().write("{\"status\":401,\"code\":\"INVALID_TOKEN\",\"message\":\"유효하지 않거나 만료된 토큰입니다.\"}");
 
             return;
         }
-
-        String username = jwtUtil.getUsername(token);
-        String role = jwtUtil.getRole(token);
-
-        User user = User.builder()
-                .email(username)
-                .role(Role.valueOf(role))
-                .password("temppassword")
-                .build();
-
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
