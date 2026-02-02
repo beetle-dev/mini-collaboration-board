@@ -1,13 +1,13 @@
 package com.minicollaborationboard.global.security.jwt;
 
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
+import com.minicollaborationboard.global.security.handler.CustomAuthenticationFailureHandler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -47,12 +47,5 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createJwt(username, role);
 
         response.setHeader("Authorization", "Bearer " + token);
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-
-        // todo 핸들러 처리
-        throw new BadCredentialsException("로그인에 실패했습니다.");
     }
 }

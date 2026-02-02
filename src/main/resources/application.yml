@@ -7,10 +7,11 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
   jwt:
-    secret: 37qNKNvZ3i3dlxiEAEbPrgIEi2xpAI8LJkyTkIPZNg2
+    secret: 37qNKNvZ3i3dlxiEAEbPrgIEi2xpAI8LJkyTkIPZNg2 # todo AWS 처리
     access-expiration: 36000000
+
