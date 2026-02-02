@@ -52,6 +52,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 
+        // todo 핸들러 처리
         throw new BadCredentialsException("로그인에 실패했습니다.");
     }
 }

@@ -13,4 +13,4 @@ spring:
 
   jwt:
     secret: ***REMOVED***
-    access-expiration: 60*60*10L
+    access-expiration: 36000000

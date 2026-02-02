@@ -24,6 +24,7 @@ public class AuthService {
 
         if (userRepository.existsByEmail(email)) {
 
+            // todo 핸들러 처리
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
 
