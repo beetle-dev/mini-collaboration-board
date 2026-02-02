@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 public class BoardMember {
@@ -16,6 +17,6 @@ public class BoardMember {
     private BoardMemberRole role;
     private Long boardId;
     private Long userId;
-    private Timestamp joinedAt;
+    private LocalDateTime joinedAt;
 
 }

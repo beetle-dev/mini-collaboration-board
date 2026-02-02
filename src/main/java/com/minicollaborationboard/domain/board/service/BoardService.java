@@ -5,6 +5,7 @@ import com.minicollaborationboard.domain.board.dto.BoardResDto;
 import com.minicollaborationboard.domain.board.dto.CreateBoardReqDto;
 import com.minicollaborationboard.domain.board.entity.Board;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
+import com.minicollaborationboard.global.exception.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +27,7 @@ public class BoardService {
 
         if (boardRepository.existsByName(boardName)) {
 
-            throw new IllegalArgumentException("이미 존재하는 보드명 입니다.");
+            throw new DuplicateResourceException("이미 존재하는 보드명 입니다.");
         }
 
         Board board = Board.builder()
