@@ -44,11 +44,11 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public Long getUserId() {
+    public User getCurrentUser() {
 
         User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         String userUuid = user.getUuid();
 
-        return userRepository.findByUuid(userUuid).getId();
+        return userRepository.findByUuid(userUuid);
     }
 }
