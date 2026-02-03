@@ -26,5 +26,6 @@ public class CustomUserDetailService implements UserDetailsService {
         }
 
         return null;
+        // todo CustomUserDetailService.loadUserByUsername()에서 사용자가 없을 때 null 대신 예외를 던지기:
     }
 }

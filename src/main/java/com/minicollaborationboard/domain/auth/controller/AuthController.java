@@ -17,7 +17,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<Void> signUp(@RequestBody SignUpReqDto signUpReqDto) {
-
+        System.out.println("signUpReqDto = " + signUpReqDto);
         authService.signUp(signUpReqDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
