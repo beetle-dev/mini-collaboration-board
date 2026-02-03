@@ -6,6 +6,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -14,11 +16,35 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .status(HttpStatus.CONFLICT.value())
-                .code("DUPLICATE_RESOURCE")
+                .code(e.errorCode)
                 .message(e.getMessage())
                 .build();
         
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException e) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.NOT_FOUND.value())
+                .code(e.errorCode)
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.FORBIDDEN.value())
+                .code("FORBIDDEN")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)

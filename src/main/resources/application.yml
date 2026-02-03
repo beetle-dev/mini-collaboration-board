@@ -13,11 +13,23 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: tru
+        format_sql: true
 
   jwt:
     secret: ***REMOVED*** # todo AWS 처리
     access-expiration: 36000000
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ***REMOVED***
+    password: ***REMOVED***
+    properties:
+      mail:
+        smtp:
+          auth: ture
+          timeout: 5000
+          starttls.enable : true
 
 logging:
   level:
