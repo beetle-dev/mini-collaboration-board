@@ -1,8 +1,9 @@
 package com.minicollaborationboard.global.security.config;
 
+import com.minicollaborationboard.global.security.constants.PermitAuthPath;
 import com.minicollaborationboard.global.security.handler.CustomAuthenticationFailureHandler;
 import com.minicollaborationboard.global.security.jwt.JwtFilter;
-import com.minicollaborationboard.global.security.jwt.JwtUtil;
+import com.minicollaborationboard.global.security.jwt.JwtTokenProvider;
 import com.minicollaborationboard.global.security.jwt.LoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,12 +23,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
+    private final JwtFilter jwtFilter;
+    private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -39,10 +41,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        LoginFilter loginFilter = new LoginFilter(
-                authenticationManager(authenticationConfiguration), jwtUtil);
-        loginFilter.setAuthenticationFailureHandler(customAuthenticationFailureHandler);
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -52,11 +50,15 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/login", "/signup").permitAll()
+                        .requestMatchers(PermitAuthPath.permitAuthPath.toArray(new String[0])).permitAll()
                         .anyRequest().authenticated())
 
-                .addFilterBefore(new JwtFilter(jwtUtil, customAuthenticationFailureHandler), LoginFilter.class)
-                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, LoginFilter.class)
+                .addFilterAt(new LoginFilter(
+                        authenticationConfiguration.getAuthenticationManager(),
+                        jwtTokenProvider,
+                        customAuthenticationFailureHandler),
+                        UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

@@ -37,7 +37,7 @@ public class AuthService {
                 .password(bCryptPasswordEncoder.encode(password))
                 .name(name)
                 .status(UserStatus.ACTIVE)
-                .role(Role.ROLE_USER)
+                .role(Role.USER)
                 .uuid(UUID.randomUUID().toString())
                 .build();
 
