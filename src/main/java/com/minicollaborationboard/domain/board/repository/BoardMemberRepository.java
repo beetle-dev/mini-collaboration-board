@@ -1,10 +1,13 @@
 package com.minicollaborationboard.domain.board.repository;
 
 import com.minicollaborationboard.domain.board.entity.BoardMember;
+import com.minicollaborationboard.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface BoardMemberRepository extends JpaRepository<BoardMember, Long> {
-    boolean existsByBoardIdAndOwnerId(Long boardId, Long userId);
+import java.util.Optional;
 
-    BoardMember findByOwnerId(Long currentUserId);
+public interface BoardMemberRepository extends JpaRepository<BoardMember, Long> {
+    boolean existsByBoardIdAndUserId(Long boardId, Long userId);
+
+    Optional<BoardMember> findByUserIdAndBoardId(Long currentUserId, Long boardId);
 }
