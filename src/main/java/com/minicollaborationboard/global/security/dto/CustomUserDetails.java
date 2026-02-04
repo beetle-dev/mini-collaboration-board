@@ -6,11 +6,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @ToString
 @Getter
@@ -22,11 +25,9 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
-        Collection<GrantedAuthority> collection = new ArrayList<>();
-
-        collection.add((GrantedAuthority) () -> user.getRole().name());
-
-        return collection;
+        return Collections.singleton(
+                new SimpleGrantedAuthority("ROLE_" + user.getRole().toString())
+        );
     }
 
     @Override

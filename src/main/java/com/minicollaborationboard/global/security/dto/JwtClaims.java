@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ClaimsResDto {
+public class JwtClaims {
 
+    private String uuid;
     private String username;
     private String role;
-    private String uuid;
 }
