@@ -21,6 +21,7 @@ public class Board extends BaseEntity {
     private Long id;
 
     private String name;
+
     private Long ownerId;
 
 }

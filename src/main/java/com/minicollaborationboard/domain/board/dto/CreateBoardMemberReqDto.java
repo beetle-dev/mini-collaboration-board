@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Getter
-public class CreateBoardMeberReqDto {
+public class CreateBoardMemberReqDto {
 
     private Long boardId;
     private Long userId;

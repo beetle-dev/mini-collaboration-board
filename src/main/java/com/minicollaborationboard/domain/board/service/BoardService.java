@@ -1,27 +1,24 @@
 package com.minicollaborationboard.domain.board.service;
 
 import com.minicollaborationboard.domain.auth.service.AuthService;
-import com.minicollaborationboard.domain.board.dto.BoardResDto;
-import com.minicollaborationboard.domain.board.dto.CreateBoardMeberReqDto;
-import com.minicollaborationboard.domain.board.dto.CreateBoardReqDto;
-import com.minicollaborationboard.domain.board.dto.CreateInviReqDto;
+import com.minicollaborationboard.domain.board.dto.*;
 import com.minicollaborationboard.domain.board.entity.*;
 import com.minicollaborationboard.domain.board.repository.BoardInvitationRepository;
 import com.minicollaborationboard.domain.board.repository.BoardMemberRepository;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
+import com.minicollaborationboard.domain.user.entity.User;
 import com.minicollaborationboard.global.common.EmailService;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
+import com.minicollaborationboard.global.exception.ExpiredResourceException;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.mail.MailException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -36,8 +33,8 @@ public class BoardService {
     private final BoardInvitationRepository boardInvitationRepository;
     private final EmailService emailService;
 
-    private final static int BOARD_INVITATIOIN_EXPIRE_DAY = 3;
-    private final static String EMAIL_SUBJECT = "Board 초대 메일";
+    private static final int BOARD_INVITATION_EXPIRE_DAY = 3;
+    private static final String EMAIL_SUBJECT = "Board 초대 메일";
 
     @Transactional
     public void createBoard(CreateBoardReqDto createBoardReqDto) {
@@ -57,35 +54,31 @@ public class BoardService {
 
         Long boardId = boardRepository.save(board).getId();
 
-        createBoardMember(CreateBoardMeberReqDto.builder()
+        createBoardMember(CreateBoardMemberReqDto.builder()
                 .boardId(boardId)
                 .boardMemberRole(BoardMemberRole.OWNER)
                 .userId(userId)
                 .build());
     }
 
-    public void createBoardMember(CreateBoardMeberReqDto boardMeberReqDto) {
+    @Transactional
+    public void createBoardMember(CreateBoardMemberReqDto boardMemberReqDto) {
 
-        BoardMemberRole role = boardMeberReqDto.getBoardMemberRole();
-        Long boardId = boardMeberReqDto.getBoardId();
-        Long userId = boardMeberReqDto.getUserId();
+        BoardMemberRole role = boardMemberReqDto.getBoardMemberRole();
+        Long boardId = boardMemberReqDto.getBoardId();
+        Long userId = boardMemberReqDto.getUserId();
 
-        existsByBoardIdAndUserId(boardId, userId);
+        if (boardMemberRepository.existsByBoardIdAndUserId(boardId, userId)) {
+
+            return;
+        }
 
         boardMemberRepository.save(BoardMember.builder()
                 .role(role)
                 .boardId(boardId)
-                .ownerId(userId)
+                .userId(userId)
                 .joinedAt(LocalDateTime.now())
                 .build());
-    }
-
-    public void existsByBoardIdAndUserId(Long boardId, Long userId) {
-
-        if (boardMemberRepository.existsByBoardIdAndOwnerId(boardId, userId)) {
-
-            throw new DuplicateResourceException("해당 보드에 이미 등록된 멤버입니다.");
-        }
     }
 
     public Page<BoardResDto> getBoards(Long boardId, Pageable pageable) {
@@ -107,18 +100,14 @@ public class BoardService {
     }
 
     @Transactional
-    public void createInvitation(CreateInviReqDto createInviReqDto) throws AccessDeniedException, MessagingException {
+    public void createInvitation(Long boardId, CreateInvitationReqDto createInvitationReqDto) throws MessagingException {
 
         Long currentUserId = authService.getCurrentUser().getId();
-        BoardMember currentBoardMember = boardMemberRepository.findByOwnerId(currentUserId);
-
-        if (currentBoardMember == null) {
-
-            throw new ResourceNotFoundException("본인이 속하지 않은 보드에 초대할 수 없습니다.");
-        }
+        BoardMember currentBoardMember = boardMemberRepository.findByUserIdAndBoardId(currentUserId, boardId)
+                .orElseThrow(() -> new ResourceNotFoundException("본인이 속하지 않은 보드에 초대할 수 없습니다."));
 
         BoardMemberRole currentBoardMemberRole = currentBoardMember.getRole();
-        BoardMemberRole inviteeBoardMemberRole = createInviReqDto.getRole();
+        BoardMemberRole inviteeBoardMemberRole = createInvitationReqDto.getRole();
 
         if (currentBoardMemberRole == BoardMemberRole.MEMBER ||
                 currentBoardMemberRole == BoardMemberRole.ADMIN && inviteeBoardMemberRole == BoardMemberRole.ADMIN) {
@@ -126,8 +115,7 @@ public class BoardService {
             throw new AccessDeniedException("초대 권한이 없습니다.");
         }
 
-        Long boardId = createInviReqDto.getBoardId();
-        String inviteeEmail = createInviReqDto.getInviteeEmail();
+        String inviteeEmail = createInvitationReqDto.getInviteeEmail();
 
         if (boardInvitationRepository.existsByBoardIdAndInviteeEmailAndStatus(boardId, inviteeEmail, BoardInvitationStatus.PENDING)) {
 
@@ -141,16 +129,11 @@ public class BoardService {
                 .role(inviteeBoardMemberRole)
                 .status(BoardInvitationStatus.PENDING)
                 .uuid(UUID.randomUUID().toString())
-                .expiredAt(LocalDateTime.now().plusDays(BOARD_INVITATIOIN_EXPIRE_DAY))
+                .expiredAt(LocalDateTime.now().plusDays(BOARD_INVITATION_EXPIRE_DAY))
                 .build());
 
-        try {
 
-            sendInvitation(boardInvitation);
-        } catch (MailException e) {
-
-            System.out.println(e.getMessage());
-        }
+        sendInvitation(boardInvitation);
     }
 
     public void sendInvitation(BoardInvitation boardInvitation) throws MessagingException {
@@ -240,5 +223,28 @@ public class BoardService {
                 "</html>\n";
 
         emailService.sendHtmlMessage(to, EMAIL_SUBJECT, htmlBody);
+    }
+
+    @Transactional
+    public void acceptInvitation(String uuid) {
+
+        BoardInvitation invitation = boardInvitationRepository.findByUuid(uuid)
+                .orElseThrow(() -> new ResourceNotFoundException("찾을 수 없는 초대 입니다."));
+
+        if (invitation.getExpiredAt().isBefore(LocalDateTime.now())) {
+
+            throw new ExpiredResourceException("만료된 초대 입니다.");
+        }
+
+        User user = authService.findByEmail(invitation.getInviteeEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("회원가입이 필요합니다."));
+
+        invitation.accept();
+
+        createBoardMember(CreateBoardMemberReqDto.builder()
+                .boardId(invitation.getBoardId())
+                .userId(user.getId())
+                .boardMemberRole(invitation.getRole())
+                .build());
     }
 }

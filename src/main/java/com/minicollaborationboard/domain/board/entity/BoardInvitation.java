@@ -30,4 +30,8 @@ public class BoardInvitation extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private BoardInvitationStatus status;
+
+    public void accept() {
+        this.status = BoardInvitationStatus.ACCEPTED;
+    }
 }

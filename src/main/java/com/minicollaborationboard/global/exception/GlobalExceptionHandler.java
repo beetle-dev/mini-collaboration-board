@@ -2,11 +2,10 @@ package com.minicollaborationboard.global.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.mail.MailException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.nio.file.AccessDeniedException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -45,6 +44,30 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+    }
+
+    @ExceptionHandler(MailException.class)
+    public ResponseEntity<ErrorResponse> handleMailException(MailException e) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
+                .code("MAIL_SERVICE_UNAVAILABLE")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse);
+    }
+
+    @ExceptionHandler(ExpiredResourceException.class)
+    public ResponseEntity<ErrorResponse> handleExpiredResourceException(ExpiredResourceException e) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .status(HttpStatus.GONE.value())
+                .code(e.errorCode)
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.GONE).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)

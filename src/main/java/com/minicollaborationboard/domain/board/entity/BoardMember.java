@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter
@@ -23,6 +22,6 @@ public class BoardMember {
     private BoardMemberRole role;
 
     private Long boardId;
-    private Long ownerId;
+    private Long userId;
     private LocalDateTime joinedAt;
 }
