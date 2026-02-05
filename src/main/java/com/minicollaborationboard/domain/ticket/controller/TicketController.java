@@ -31,10 +31,26 @@ public class TicketController {
         return ticketService.getTickets(getTicketReqDto);
     }
 
-    @PutMapping
-    public ResponseEntity<Void> updateTicket(@Valid @RequestBody UpdateTicketReqDto updateTicketReqDto){
+    @PutMapping("/info")
+    public ResponseEntity<Void> updateTicketInfo(@Valid @RequestBody UpdateTicketReqDto.TicketInfoDto updateTicketReqDto){
 
-        ticketService.updateTicket(updateTicketReqDto);
+        ticketService.updateTicketInfo(updateTicketReqDto);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/assignee")
+    public ResponseEntity<Void> updateTicketAssignee(@Valid @RequestBody UpdateTicketReqDto.TicketAssigneeDto updateTicketReqDto) {
+
+        ticketService.updateTicketAssignee(updateTicketReqDto);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/status")
+    public ResponseEntity<Void> updateTicketStatus(@Valid @RequestBody UpdateTicketReqDto.TicketStatusDto updateTicketReqDto) {
+
+        ticketService.updateTicketStatus(updateTicketReqDto);
 
         return ResponseEntity.ok().build();
     }

@@ -7,16 +7,36 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Getter
 public class UpdateTicketReqDto {
 
-    @NotNull
-    private Long id;
+    @Getter
+    public static class TicketInfoDto {
 
-    private String title;
-    private String description;
-    private LocalDateTime dueDate;
-    private Long assigneeId;
-    private TicketPriority priority;
-    private TicketStatus status;
+        @NotNull
+        private Long ticketId;
+        private String title;
+        private String description;
+        private LocalDateTime dueDate;
+        private TicketPriority priority;
+    }
+
+    @Getter
+    public static class TicketAssigneeDto {
+
+        @NotNull
+        private Long ticketId;
+
+        @NotNull
+        private Long assigneeId;
+    }
+
+    @Getter
+    public static class TicketStatusDto {
+
+        @NotNull
+        private Long ticketId;
+
+        @NotNull
+        private TicketStatus status;
+    }
 }
