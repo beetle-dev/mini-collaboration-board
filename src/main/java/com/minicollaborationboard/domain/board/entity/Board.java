@@ -21,7 +21,13 @@ public class Board extends BaseEntity {
     private Long id;
 
     private String name;
-
+    private String code;
     private Long ownerId;
 
+    @Builder.Default
+    private Long lastTicketSequence = 0L;
+
+    public Long getNextTicketSequence() {
+        return ++lastTicketSequence;
+    }
 }
