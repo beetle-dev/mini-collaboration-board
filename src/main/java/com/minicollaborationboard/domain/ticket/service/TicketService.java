@@ -77,12 +77,36 @@ public class TicketService {
     }
 
     @Transactional
-    public void updateTicket(UpdateTicketReqDto updateTicketReqDto) {
+    public void updateTicketInfo(UpdateTicketReqDto.TicketInfoDto updateTicketReqDto) {
 
-        Ticket ticket = ticketRepository.findById(updateTicketReqDto.getId()).orElseThrow(() ->
+        Ticket ticket = ticketRepository.findById(updateTicketReqDto.getTicketId()).orElseThrow(() ->
                 new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
 
-        ticket.update(updateTicketReqDto);
+        Long userId = authService.getCurrentUser().getId();
+
+        ticket.updateTicketInfo(updateTicketReqDto, userId);
+    }
+
+    @Transactional
+    public void updateTicketAssignee(UpdateTicketReqDto.TicketAssigneeDto updateTicketReqDto) {
+
+        Ticket ticket = ticketRepository.findById(updateTicketReqDto.getTicketId()).orElseThrow(() ->
+                new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
+
+        Long userId = authService.getCurrentUser().getId();
+
+        ticket.updateTicketAsignee(updateTicketReqDto, userId);
+    }
+
+    @Transactional
+    public void updateTicketStatus(UpdateTicketReqDto.TicketStatusDto updateTicketReqDto) {
+
+        Ticket ticket = ticketRepository.findById(updateTicketReqDto.getTicketId()).orElseThrow(() ->
+                new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
+
+        Long userId = authService.getCurrentUser().getId();
+
+        ticket.updateTicketStatus(updateTicketReqDto, userId);
     }
 
     @Transactional

@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Entity
@@ -28,19 +27,31 @@ public class Ticket extends BaseEntity {
     private Long assigneeId;
     private String sequence;
     private Long createdBy;
+    private long updatedBy;
 
     @Enumerated(EnumType.STRING)
     private TicketPriority priority;
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
-    public void update(UpdateTicketReqDto updateTicketReqDto) {
+    public void updateTicketInfo(UpdateTicketReqDto.TicketInfoDto updateTicketReqDto, Long userId) {
 
         this.title = updateTicketReqDto.getTitle();
         this.description = updateTicketReqDto.getDescription();
         this.dueDate = updateTicketReqDto.getDueDate();
-        this.assigneeId = updateTicketReqDto.getAssigneeId();
         this.priority = updateTicketReqDto.getPriority();
+        this.updatedBy = userId;
+    }
+
+    public void updateTicketAsignee(UpdateTicketReqDto.TicketAssigneeDto updateTicketReqDto, Long userId) {
+
+        this.assigneeId = updateTicketReqDto.getAssigneeId();
+        this.updatedBy = userId;
+    }
+
+    public void updateTicketStatus(UpdateTicketReqDto.TicketStatusDto updateTicketReqDto, Long userId) {
+
         this.status = updateTicketReqDto.getStatus();
+        this.updatedBy = userId;
     }
 }
