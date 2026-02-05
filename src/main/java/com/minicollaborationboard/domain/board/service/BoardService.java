@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -41,6 +42,7 @@ public class BoardService {
 
         Long userId = authService.getCurrentUser().getId();
         String boardName = createBoardReqDto.getName();
+        String boardCode = createBoardReqDto.getCode();
 
         if (boardRepository.existsByName(boardName)) {
 
@@ -49,6 +51,7 @@ public class BoardService {
 
         Board board = Board.builder()
                 .name(boardName)
+                .code(boardCode)
                 .ownerId(userId)
                 .build();
 
@@ -251,5 +254,18 @@ public class BoardService {
                 .userId(user.getId())
                 .boardMemberRole(invitation.getRole())
                 .build());
+    }
+
+    public Optional<Board> findById(Long boardId) {
+
+        return boardRepository.findById(boardId);
+    }
+
+    public BoardMemberRole getBoardMemberRole(Long userId, Long boardId) {
+
+        BoardMember member = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(() ->
+                new ResourceNotFoundException("멤버를 찾을 수 없습니다."));
+
+        return member.getRole();
     }
 }
