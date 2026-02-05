@@ -231,6 +231,11 @@ public class BoardService {
         BoardInvitation invitation = boardInvitationRepository.findByUuid(uuid)
                 .orElseThrow(() -> new ResourceNotFoundException("찾을 수 없는 초대 입니다."));
 
+        if (invitation.getStatus() == BoardInvitationStatus.ACCEPTED) {
+
+            throw new DuplicateResourceException("이미 수락한 초대 입니다.");
+        }
+
         if (invitation.getExpiredAt().isBefore(LocalDateTime.now())) {
 
             throw new ExpiredResourceException("만료된 초대 입니다.");

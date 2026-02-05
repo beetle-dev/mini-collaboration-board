@@ -54,7 +54,7 @@ class LoginJwtTest {
                     .name("테스트")
                     .uuid(UUID.randomUUID().toString())
                     .status(UserStatus.ACTIVE)
-                    .role(Role.ROLE_USER)
+                    .role(Role.USER)
                     .build());
         });
     }

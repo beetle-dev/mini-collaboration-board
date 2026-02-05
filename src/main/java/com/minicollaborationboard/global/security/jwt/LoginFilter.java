@@ -46,10 +46,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String uuid = customUserDetails.getUuid();
         String username = customUserDetails.getUsername();
-        String role = authResult.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst()
-                .orElse(Role.USER.toString());
+        String role = customUserDetails.getUser().getRole().toString();
 
         String token = jwtTokenProvider.createJwt(uuid, username, role);
 
