@@ -6,7 +6,7 @@ import com.minicollaborationboard.domain.board.entity.*;
 import com.minicollaborationboard.domain.board.repository.BoardInvitationRepository;
 import com.minicollaborationboard.domain.board.repository.BoardMemberRepository;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
-import com.minicollaborationboard.domain.ticket.service.TicketService;
+import com.minicollaborationboard.domain.ticket.repository.TicketRepository;
 import com.minicollaborationboard.domain.user.entity.User;
 import com.minicollaborationboard.global.common.EmailService;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -34,7 +33,7 @@ public class BoardService {
     private final BoardMemberRepository boardMemberRepository;
     private final BoardInvitationRepository boardInvitationRepository;
     private final EmailService emailService;
-    private final TicketService ticketService;
+    private final TicketRepository ticketRepository;
 
     private static final int BOARD_INVITATION_EXPIRE_DAY = 3;
     private static final String EMAIL_SUBJECT = "Board 초대 메일";
@@ -279,7 +278,7 @@ public class BoardService {
 
     public void increaseLastTicketSequence(Long boardId) {
 
-        boardRepository.increamentLastTicketSequence(boardId);
+        boardRepository.incrementLastTicketSequence(boardId);
     }
 
     public Long getLastTicketSequence(Long boardId) {
@@ -323,7 +322,7 @@ public class BoardService {
         }
 
         deleteInvitationAllByBoardId(boardId);
-        ticketService.deleteTicketAllByBoardId(boardId);
+        ticketRepository.deleteAllByBoardId(boardId);
         boardMemberRepository.deleteAllByBoardId(boardId);
 
         boardRepository.delete(board);
