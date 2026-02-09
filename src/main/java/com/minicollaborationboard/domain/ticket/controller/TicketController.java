@@ -36,7 +36,7 @@ public class TicketController {
 
         ticketService.updateTicketInfo(updateTicketReqDto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/assignee")
@@ -44,7 +44,7 @@ public class TicketController {
 
         ticketService.updateTicketAssignee(updateTicketReqDto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/status")
@@ -52,7 +52,7 @@ public class TicketController {
 
         ticketService.updateTicketStatus(updateTicketReqDto);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{ticketId}")
@@ -60,6 +60,6 @@ public class TicketController {
 
         ticketService.deleteTicket(ticketId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
