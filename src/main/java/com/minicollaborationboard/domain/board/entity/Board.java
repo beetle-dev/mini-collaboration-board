@@ -26,4 +26,9 @@ public class Board extends BaseEntity {
 
     @Builder.Default
     private Long lastTicketSequence = 0L;
+
+    public void updateName(String name) {
+
+        this.name = name;
+    }
 }

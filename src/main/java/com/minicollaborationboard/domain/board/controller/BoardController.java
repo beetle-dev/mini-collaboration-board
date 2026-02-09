@@ -3,6 +3,7 @@ package com.minicollaborationboard.domain.board.controller;
 import com.minicollaborationboard.domain.board.dto.BoardResDto;
 import com.minicollaborationboard.domain.board.dto.CreateBoardReqDto;
 import com.minicollaborationboard.domain.board.dto.CreateInvitationReqDto;
+import com.minicollaborationboard.domain.board.dto.UpdateBoardReqDto;
 import com.minicollaborationboard.domain.board.service.BoardService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -52,5 +53,22 @@ public class BoardController {
         boardService.acceptInvitation(uuid);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PatchMapping("/{boardId}")
+    public ResponseEntity<Void> updateBoard(@PathVariable Long boardId,
+                                            @Valid @RequestBody UpdateBoardReqDto updateBoardReqDto) {
+
+        boardService.updateBoard(boardId, updateBoardReqDto);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{boardId}")
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
+
+        boardService.deleteBoard(boardId);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -10,4 +10,6 @@ public interface BoardInvitationRepository extends JpaRepository<BoardInvitation
     boolean existsByBoardIdAndInviteeEmailAndStatus(Long boardId, String inviteeEmail, BoardInvitationStatus boardInvitationStatus);
 
     Optional<BoardInvitation> findByUuid(String uuid);
+
+    void deleteAllByBoardId(Long boardId);
 }

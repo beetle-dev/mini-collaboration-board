@@ -6,6 +6,7 @@ import com.minicollaborationboard.domain.board.entity.*;
 import com.minicollaborationboard.domain.board.repository.BoardInvitationRepository;
 import com.minicollaborationboard.domain.board.repository.BoardMemberRepository;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
+import com.minicollaborationboard.domain.ticket.service.TicketService;
 import com.minicollaborationboard.domain.user.entity.User;
 import com.minicollaborationboard.global.common.EmailService;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
@@ -33,6 +34,7 @@ public class BoardService {
     private final BoardMemberRepository boardMemberRepository;
     private final BoardInvitationRepository boardInvitationRepository;
     private final EmailService emailService;
+    private final TicketService ticketService;
 
     private static final int BOARD_INVITATION_EXPIRE_DAY = 3;
     private static final String EMAIL_SUBJECT = "Board 초대 메일";
@@ -141,7 +143,8 @@ public class BoardService {
 
     public void sendInvitation(BoardInvitation boardInvitation) throws MessagingException {
 
-        String boardName = Objects.requireNonNull(boardRepository.findById(boardInvitation.getBoardId()).orElse(null)).getName();
+        String boardName = boardRepository.findById(boardInvitation.getBoardId()).orElseThrow(() ->
+                new ResourceNotFoundException("보드를 찾을 수 없습니다.")).getName();
         String to = boardInvitation.getInviteeEmail();
         String htmlBody = "<!DOCTYPE html>\n" +
                 "<html>\n" +
@@ -282,5 +285,52 @@ public class BoardService {
     public Long getLastTicketSequence(Long boardId) {
 
         return boardRepository.getLastTicketSequenceByBoardId(boardId);
+    }
+
+    @Transactional
+    public void updateBoard(Long boardId, UpdateBoardReqDto updateBoardReqDto) {
+
+        Long userId = authService.getCurrentUser().getId();
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new ResourceNotFoundException("보드를 찾을 수 없습니다."));
+
+        BoardMember member = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(() ->
+                new AccessDeniedException("보드 접근 권한이 없습니다."));
+
+        if (member.getRole() == BoardMemberRole.MEMBER) {
+
+            throw new AccessDeniedException("보드 수정 권한이 없습니다.");
+        }
+
+        board.updateName(updateBoardReqDto.getName());
+    }
+
+    @Transactional
+    public void deleteBoard(Long boardId) {
+
+        Long userId = authService.getCurrentUser().getId();
+
+        Board board = boardRepository.findById(boardId).orElseThrow(() ->
+                new ResourceNotFoundException("보드를 찾을 수 없습니다."));
+
+        BoardMember member = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(() ->
+                new AccessDeniedException("보드 접근 권한이 없습니다."));
+
+        if (member.getRole() != BoardMemberRole.OWNER) {
+
+            throw new AccessDeniedException("보드 삭제 권한이 없습니다.");
+        }
+
+        deleteInvitationAllByBoardId(boardId);
+        ticketService.deleteTicketAllByBoardId(boardId);
+        boardMemberRepository.deleteAllByBoardId(boardId);
+
+        boardRepository.delete(board);
+    }
+
+    private void deleteInvitationAllByBoardId(Long boardId) {
+
+        boardInvitationRepository.deleteAllByBoardId(boardId);
     }
 }
