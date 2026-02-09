@@ -1,6 +1,6 @@
 package com.minicollaborationboard.domain.ticket.repository;
 
-import com.minicollaborationboard.domain.ticket.dto.GetTicketReqDto;
+import com.minicollaborationboard.domain.ticket.dto.TicketSearchDto;
 import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,15 +17,15 @@ public class TicketQueryRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    public List<Ticket> findTickets(GetTicketReqDto getTicketReqDto) {
+    public List<Ticket> findTickets(TicketSearchDto ticketSearchDto) {
 
         return jpaQueryFactory
                 .selectFrom(ticket)
                 .where(
-                        boardIdEqualTo(getTicketReqDto.getBoardId()),
-                        ticketIdEqualTo(getTicketReqDto.getTicketId()),
-                        sequenceEqualTo(getTicketReqDto.getSequence()),
-                        assigneeIdEqualTo(getTicketReqDto.getAssigneeId())
+                        boardIdEqualTo(ticketSearchDto.getBoardId()),
+                        ticketIdEqualTo(ticketSearchDto.getTicketId()),
+                        sequenceEqualTo(ticketSearchDto.getSequence()),
+                        assigneeIdEqualTo(ticketSearchDto.getAssigneeId())
                 )
                 .fetch();
     }

@@ -26,8 +26,4 @@ public class Board extends BaseEntity {
 
     @Builder.Default
     private Long lastTicketSequence = 0L;
-
-    public Long getNextTicketSequence() {
-        return ++lastTicketSequence;
-    }
 }

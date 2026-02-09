@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class UpdateTicketReqDto {
 
     @Getter
-    public static class TicketInfoDto {
+    public static class Info {
 
         @NotNull
         private Long ticketId;
@@ -21,7 +21,7 @@ public class UpdateTicketReqDto {
     }
 
     @Getter
-    public static class TicketAssigneeDto {
+    public static class Assignee {
 
         @NotNull
         private Long ticketId;
@@ -31,7 +31,7 @@ public class UpdateTicketReqDto {
     }
 
     @Getter
-    public static class TicketStatusDto {
+    public static class Status {
 
         @NotNull
         private Long ticketId;

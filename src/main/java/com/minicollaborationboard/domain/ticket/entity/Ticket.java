@@ -1,12 +1,8 @@
 package com.minicollaborationboard.domain.ticket.entity;
 
-import com.minicollaborationboard.domain.ticket.dto.UpdateTicketReqDto;
 import com.minicollaborationboard.global.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -14,44 +10,53 @@ import java.time.LocalDateTime;
 @Entity
 @Builder
 @AllArgsConstructor
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class Ticket extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+
     private String description;
+
     private LocalDateTime dueDate;
+
+    @Column(nullable = false)
     private Long boardId;
+
     private Long assigneeId;
+
+    @Column(unique = true)
     private String sequence;
+
     private Long createdBy;
-    private long updatedBy;
+    private Long updatedBy;
 
     @Enumerated(EnumType.STRING)
     private TicketPriority priority;
     @Enumerated(EnumType.STRING)
     private TicketStatus status;
 
-    public void updateTicketInfo(UpdateTicketReqDto.TicketInfoDto updateTicketReqDto, Long userId) {
+    public void updateTicketInfo(String title, String description, LocalDateTime dueDate, TicketPriority priority, Long userId) {
 
-        this.title = updateTicketReqDto.getTitle();
-        this.description = updateTicketReqDto.getDescription();
-        this.dueDate = updateTicketReqDto.getDueDate();
-        this.priority = updateTicketReqDto.getPriority();
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.priority = priority;
         this.updatedBy = userId;
     }
 
-    public void updateTicketAsignee(UpdateTicketReqDto.TicketAssigneeDto updateTicketReqDto, Long userId) {
+    public void updateTicketAssignee(Long assigneeId, Long userId) {
 
-        this.assigneeId = updateTicketReqDto.getAssigneeId();
+        this.assigneeId = assigneeId;
         this.updatedBy = userId;
     }
 
-    public void updateTicketStatus(UpdateTicketReqDto.TicketStatusDto updateTicketReqDto, Long userId) {
+    public void updateTicketStatus(TicketStatus status, Long userId) {
 
-        this.status = updateTicketReqDto.getStatus();
+        this.status = status;
         this.updatedBy = userId;
     }
 }

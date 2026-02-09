@@ -1,13 +1,12 @@
 package com.minicollaborationboard.domain.ticket.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
-@Builder
+@Getter @Setter
 @AllArgsConstructor
-public class GetTicketReqDto {
+public class TicketSearchDto {
 
     private Long boardId;
     private Long ticketId;

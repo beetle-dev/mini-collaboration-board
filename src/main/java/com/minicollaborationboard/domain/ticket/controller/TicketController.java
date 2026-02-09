@@ -26,39 +26,39 @@ public class TicketController {
     }
 
     @GetMapping
-    public List<TicketResDto> getTickets(@RequestParam(required = false) GetTicketReqDto getTicketReqDto) {
+    public List<TicketResDto> getTickets(TicketSearchDto ticketSearchDto) {
 
-        return ticketService.getTickets(getTicketReqDto);
+        return ticketService.getTickets(ticketSearchDto);
     }
 
-    @PutMapping("/info")
-    public ResponseEntity<Void> updateTicketInfo(@Valid @RequestBody UpdateTicketReqDto.TicketInfoDto updateTicketReqDto){
+    @PatchMapping("/info")
+    public ResponseEntity<Void> updateTicketInfo(@Valid @RequestBody UpdateTicketReqDto.Info updateTicketReqDto){
 
         ticketService.updateTicketInfo(updateTicketReqDto);
 
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/assignee")
-    public ResponseEntity<Void> updateTicketAssignee(@Valid @RequestBody UpdateTicketReqDto.TicketAssigneeDto updateTicketReqDto) {
+    @PatchMapping("/assignee")
+    public ResponseEntity<Void> updateTicketAssignee(@Valid @RequestBody UpdateTicketReqDto.Assignee updateTicketReqDto) {
 
         ticketService.updateTicketAssignee(updateTicketReqDto);
 
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/status")
-    public ResponseEntity<Void> updateTicketStatus(@Valid @RequestBody UpdateTicketReqDto.TicketStatusDto updateTicketReqDto) {
+    @PatchMapping("/status")
+    public ResponseEntity<Void> updateTicketStatus(@Valid @RequestBody UpdateTicketReqDto.Status updateTicketReqDto) {
 
         ticketService.updateTicketStatus(updateTicketReqDto);
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteTicket(@Valid @RequestBody DeleteTicketReqDto deleteTicketReqDto){
+    @DeleteMapping("/{ticketId}")
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long ticketId){
 
-        ticketService.deleteTicket(deleteTicketReqDto);
+        ticketService.deleteTicket(ticketId);
 
         return ResponseEntity.ok().build();
     }

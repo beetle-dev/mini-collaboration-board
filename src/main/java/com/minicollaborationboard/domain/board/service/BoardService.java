@@ -268,4 +268,19 @@ public class BoardService {
 
         return member.getRole();
     }
+
+    public Boolean exsistByUserIdAndBoardId(Long boardId, Long userId) {
+
+        return boardMemberRepository.existsByBoardIdAndUserId(boardId, userId);
+    }
+
+    public void increaseLastTicketSequence(Long boardId) {
+
+        boardRepository.increamentLastTicketSequence(boardId);
+    }
+
+    public Long getLastTicketSequence(Long boardId) {
+
+        return boardRepository.getLastTicketSequenceByBoardId(boardId);
+    }
 }

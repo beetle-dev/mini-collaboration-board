@@ -35,10 +35,12 @@ public class TicketService {
         Board board = boardService.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
-        String code = board.getCode();
-        Long ticketSequence = board.getNextTicketSequence();
+        boardService.increaseLastTicketSequence(boardId);
+        Long ticketSequence = boardService.getLastTicketSequence(boardId);
 
-        String sequence = code + ticketSequence;
+        String code = board.getCode();
+
+        String sequence = code + "_" + ticketSequence;
 
         ticketRepository.save(Ticket.builder()
                         .title(createTicketReqDto.getTitle())
@@ -53,9 +55,10 @@ public class TicketService {
                 .build());
     }
 
-    public List<TicketResDto> getTickets(GetTicketReqDto getTicketReqDto) {
+    @Transactional(readOnly = true)
+    public List<TicketResDto> getTickets(TicketSearchDto ticketSearchDto) {
 
-        List<Ticket> tickets = ticketQueryRepository.findTickets(getTicketReqDto);
+        List<Ticket> tickets = ticketQueryRepository.findTickets(ticketSearchDto);
 
         return tickets.stream().map(this::toTicketResDto).toList();
     }
@@ -77,43 +80,59 @@ public class TicketService {
     }
 
     @Transactional
-    public void updateTicketInfo(UpdateTicketReqDto.TicketInfoDto updateTicketReqDto) {
+    public void updateTicketInfo(UpdateTicketReqDto.Info updateTicketReqDto) {
 
-        Ticket ticket = ticketRepository.findById(updateTicketReqDto.getTicketId()).orElseThrow(() ->
-                new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
-
-        Long userId = authService.getCurrentUser().getId();
-
-        ticket.updateTicketInfo(updateTicketReqDto, userId);
-    }
-
-    @Transactional
-    public void updateTicketAssignee(UpdateTicketReqDto.TicketAssigneeDto updateTicketReqDto) {
-
-        Ticket ticket = ticketRepository.findById(updateTicketReqDto.getTicketId()).orElseThrow(() ->
-                new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
+        Ticket ticket = findById(updateTicketReqDto.getTicketId());
 
         Long userId = authService.getCurrentUser().getId();
 
-        ticket.updateTicketAsignee(updateTicketReqDto, userId);
+        if (!boardService.exsistByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+
+            throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
+        }
+
+        ticket.updateTicketInfo(
+                updateTicketReqDto.getTitle(),
+                updateTicketReqDto.getDescription(),
+                updateTicketReqDto.getDueDate(),
+                updateTicketReqDto.getPriority(),
+                userId);
     }
 
     @Transactional
-    public void updateTicketStatus(UpdateTicketReqDto.TicketStatusDto updateTicketReqDto) {
+    public void updateTicketAssignee(UpdateTicketReqDto.Assignee updateTicketReqDto) {
 
-        Ticket ticket = ticketRepository.findById(updateTicketReqDto.getTicketId()).orElseThrow(() ->
-                new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
+        Ticket ticket = findById(updateTicketReqDto.getTicketId());
 
         Long userId = authService.getCurrentUser().getId();
 
-        ticket.updateTicketStatus(updateTicketReqDto, userId);
+        if (!boardService.exsistByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+
+            throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
+        }
+
+        ticket.updateTicketAssignee(updateTicketReqDto.getAssigneeId(), userId);
     }
 
     @Transactional
-    public void deleteTicket(DeleteTicketReqDto deleteTicketReqDto) {
+    public void updateTicketStatus(UpdateTicketReqDto.Status updateTicketReqDto) {
 
-        Ticket ticket = ticketRepository.findById(deleteTicketReqDto.getTicketId()).orElseThrow(() ->
-                new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
+        Ticket ticket = findById(updateTicketReqDto.getTicketId());
+
+        Long userId = authService.getCurrentUser().getId();
+
+        if (!boardService.exsistByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+
+            throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
+        }
+
+        ticket.updateTicketStatus(updateTicketReqDto.getStatus(), userId);
+    }
+
+    @Transactional
+    public void deleteTicket(Long ticketId) {
+
+        Ticket ticket = findById(ticketId);
 
         Long userId = authService.getCurrentUser().getId();
 
@@ -125,5 +144,11 @@ public class TicketService {
         }
 
         ticketRepository.delete(ticket);
+    }
+
+    public Ticket findById(Long ticketId) {
+
+        return ticketRepository.findById(ticketId).orElseThrow(() ->
+                new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
     }
 }
