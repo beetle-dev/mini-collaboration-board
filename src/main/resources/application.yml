@@ -27,7 +27,7 @@ spring:
     properties:
       mail:
         smtp:
-          auth: ture
+          auth: true
           timeout: 5000
           starttls.enable : true
 

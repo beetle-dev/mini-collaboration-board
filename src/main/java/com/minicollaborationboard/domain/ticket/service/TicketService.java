@@ -151,9 +151,4 @@ public class TicketService {
         return ticketRepository.findById(ticketId).orElseThrow(() ->
                 new ResourceNotFoundException("티켓을 찾을 수 없습니다."));
     }
-
-    public void deleteTicketAllByBoardId(Long boardId) {
-
-        ticketRepository.deleteAllByBoardId(boardId);
-    }
 }
