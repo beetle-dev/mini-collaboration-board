@@ -3,13 +3,17 @@ package com.minicollaborationboard.domain.ticket.dto;
 import com.minicollaborationboard.domain.ticket.entity.TicketPriority;
 import com.minicollaborationboard.domain.ticket.entity.TicketStatus;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 public class UpdateTicketReqDto {
 
-    @Getter
+    @Getter @Setter
+    @NoArgsConstructor
     public static class Info {
 
         @NotNull
@@ -20,7 +24,8 @@ public class UpdateTicketReqDto {
         private TicketPriority priority;
     }
 
-    @Getter
+    @Getter @Setter
+    @NoArgsConstructor
     public static class Assignee {
 
         @NotNull
@@ -30,7 +35,8 @@ public class UpdateTicketReqDto {
         private Long assigneeId;
     }
 
-    @Getter
+    @Getter @Setter
+    @NoArgsConstructor
     public static class Status {
 
         @NotNull
