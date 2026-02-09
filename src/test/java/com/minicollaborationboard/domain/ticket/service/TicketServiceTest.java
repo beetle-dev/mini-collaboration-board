@@ -2,9 +2,14 @@ package com.minicollaborationboard.domain.ticket.service;
 
 import com.minicollaborationboard.domain.auth.service.AuthService;
 import com.minicollaborationboard.domain.board.entity.Board;
+import com.minicollaborationboard.domain.board.entity.BoardMemberRole;
 import com.minicollaborationboard.domain.board.service.BoardService;
 import com.minicollaborationboard.domain.ticket.dto.CreateTicketReqDto;
+import com.minicollaborationboard.domain.ticket.dto.TicketResDto;
+import com.minicollaborationboard.domain.ticket.dto.TicketSearchDto;
+import com.minicollaborationboard.domain.ticket.dto.UpdateTicketReqDto;
 import com.minicollaborationboard.domain.ticket.entity.Ticket;
+import com.minicollaborationboard.domain.ticket.repository.TicketQueryRepository;
 import com.minicollaborationboard.domain.ticket.repository.TicketRepository;
 import com.minicollaborationboard.domain.user.entity.User;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
@@ -15,7 +20,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.client.HttpClientErrorException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,13 +50,17 @@ class TicketServiceTest {
     @Mock
     TicketRepository ticketRepository;
 
+    @Mock
+    TicketQueryRepository ticketQueryRepository;
+
     Long userId;
     User user;
     Long boardId;
     Board board;
+    Ticket ticket;
 
     @BeforeEach
-    void initialize() {
+    void ingivenSetting() {
 
         userId = 9L;
 
@@ -62,10 +74,14 @@ class TicketServiceTest {
                 .id(boardId)
                 .code("TEST")
                 .build();
+
+        ticket = Ticket.builder()
+                .boardId(boardId)
+                .build();
     }
 
     @Test
-    void 정상_createTicket() {
+    void createTicket_두번연속호출_시퀀스증가() {
 
         // given
         CreateTicketReqDto createTicketReqDto = CreateTicketReqDto.builder()
@@ -73,7 +89,7 @@ class TicketServiceTest {
                 .build();
 
         given(authService.getCurrentUser()).willReturn(user);
-        given(boardService.findById(boardId)).willReturn(Optional.ofNullable(board));
+        given(boardService.findById(boardId)).willReturn(Optional.of(board));
         given(boardService.getLastTicketSequence(boardId))
                 .willReturn(1L)
                 .willReturn(2L);
@@ -91,7 +107,7 @@ class TicketServiceTest {
     }
 
     @Test
-    void 보드없음_createTicket() {
+    void createTicket_보드없음_예외() {
 
         // given
         CreateTicketReqDto createTicketReqDto = CreateTicketReqDto.builder()
@@ -99,10 +115,50 @@ class TicketServiceTest {
                 .build();
 
         given(authService.getCurrentUser()).willReturn(user);
-        given(boardService.findById(anyLong())).willReturn(null);
+        given(boardService.findById(anyLong())).willReturn(Optional.empty());
 
         // when
         assertThrows(ResourceNotFoundException.class, () ->
                 ticketService.createTicket(createTicketReqDto));
+    }
+
+    @Test
+    void updateTicketInfo_티켓없음_예외() {
+
+        // given
+        given(ticketRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        // when-then
+        assertThrows(ResourceNotFoundException.class, () ->
+                ticketService.updateTicketInfo(new UpdateTicketReqDto.Info()));
+    }
+
+    @Test
+    void updateTicketInfo_수정권한없음_예외() {
+
+        // given
+        UpdateTicketReqDto.Info updateTicketReqDto = new UpdateTicketReqDto.Info();
+        updateTicketReqDto.setTicketId(999L);
+
+        given(ticketRepository.findById(anyLong())).willReturn(Optional.of(ticket));
+        given(authService.getCurrentUser()).willReturn(user);
+        given(boardService.exsistByUserIdAndBoardId(boardId, userId)).willReturn(false);
+
+        // when-then
+        assertThrows(AccessDeniedException.class, () ->
+                ticketService.updateTicketInfo(updateTicketReqDto));
+    }
+
+    @Test
+    void deleteTicket_삭제권한없음_예외() {
+
+        // given
+        given(ticketRepository.findById(anyLong())).willReturn(Optional.ofNullable(ticket));
+        given(authService.getCurrentUser()).willReturn(user);
+        given(boardService.getBoardMemberRole(userId, boardId)).willReturn(BoardMemberRole.MEMBER);
+
+        // when-then
+        assertThrows(AccessDeniedException.class, () ->
+                ticketService.deleteTicket(ticket.getId()));
     }
 }
