@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailService {
+public class GmailEmailSender implements EmailSender {
 
     private final JavaMailSender javaMailSender;
 
     private final static String MAIL_SENDER = "***REMOVED***";
 
-    public void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
+    @Override
+    public void sendHtmlMessage(String from, String to, String subject, String htmlBody) throws MessagingException {
 
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
