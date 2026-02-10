@@ -1,16 +1,16 @@
 package com.minicollaborationboard.domain.ticket.entity;
 
-import com.minicollaborationboard.global.common.BaseEntity;
+import com.minicollaborationboard.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Entity
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Ticket extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

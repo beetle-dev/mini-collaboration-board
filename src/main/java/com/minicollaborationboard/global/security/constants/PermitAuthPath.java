@@ -9,5 +9,5 @@ public final class PermitAuthPath {
     public static final String SWAGGER_UI = "/swagger-ui/**";
     public static final String API_DOCS = "/v3/api-docs/**";
 
-    public static final List<String> permitAuthPath = List.of("/", LOGIN, SIGNUP, SWAGGER_UI, API_DOCS);
+    public static final List<String> permitAuthPaths = List.of("/", LOGIN, SIGNUP, SWAGGER_UI, API_DOCS);
 }

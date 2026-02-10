@@ -1,11 +1,9 @@
 package com.minicollaborationboard.global.security.service;
 
 import com.minicollaborationboard.domain.auth.repository.UserRepository;
-import com.minicollaborationboard.domain.user.entity.Role;
-import com.minicollaborationboard.domain.user.entity.User;
-import com.minicollaborationboard.domain.user.entity.UserStatus;
+import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.domain.auth.entity.UserStatus;
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
-import com.minicollaborationboard.global.security.handler.CustomAuthenticationFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;

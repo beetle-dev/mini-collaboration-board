@@ -1,13 +1,13 @@
 package com.minicollaborationboard.domain.board.service;
 
-import com.minicollaborationboard.domain.auth.service.AuthService;
+import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.dto.CreateInvitationReqDto;
 import com.minicollaborationboard.domain.board.entity.*;
 import com.minicollaborationboard.domain.board.repository.BoardInvitationRepository;
 import com.minicollaborationboard.domain.board.repository.BoardMemberRepository;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
-import com.minicollaborationboard.domain.user.entity.User;
-import com.minicollaborationboard.global.common.EmailService;
+import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.global.common.service.EmailService;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
 import com.minicollaborationboard.global.exception.ExpiredResourceException;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
@@ -42,7 +42,7 @@ class BoardServiceTest {
     BoardRepository boardRepository;
 
     @Mock
-    AuthService authService;
+    UserService userService;
 
     @Mock
     BoardMemberRepository boardMemberRepository;
@@ -104,7 +104,7 @@ class BoardServiceTest {
                 .role(BoardMemberRole.MEMBER)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(currentUser);
+        given(userService.getCurrentUser()).willReturn(currentUser);
         given(boardMemberRepository.findByUserIdAndBoardId(anyLong(), anyLong())).willReturn(Optional.ofNullable(currentBoardMember));
         given(boardInvitationRepository.existsByBoardIdAndInviteeEmailAndStatus(anyLong(), anyString(), any()))
                 .willReturn(false);
@@ -139,7 +139,7 @@ class BoardServiceTest {
                 .role(BoardMemberRole.MEMBER)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(currentUser);
+        given(userService.getCurrentUser()).willReturn(currentUser);
         given(boardMemberRepository.findByUserIdAndBoardId(anyLong(), anyLong())).willReturn(Optional.empty());
 
         // when
@@ -166,7 +166,7 @@ class BoardServiceTest {
                 .role(BoardMemberRole.MEMBER)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(currentUser);
+        given(userService.getCurrentUser()).willReturn(currentUser);
         given(boardMemberRepository.findByUserIdAndBoardId(anyLong(), anyLong())).willReturn(Optional.ofNullable(currentBoardMember));
 
         // when
@@ -193,7 +193,7 @@ class BoardServiceTest {
                 .role(BoardMemberRole.MEMBER)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(currentUser);
+        given(userService.getCurrentUser()).willReturn(currentUser);
         given(boardMemberRepository.findByUserIdAndBoardId(anyLong(), anyLong())).willReturn(Optional.ofNullable(currentBoardMember));
         given(boardInvitationRepository.existsByBoardIdAndInviteeEmailAndStatus(anyLong(), anyString(), any()))
                 .willReturn(false);
@@ -228,7 +228,7 @@ class BoardServiceTest {
                 .role(BoardMemberRole.ADMIN)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(currentUser);
+        given(userService.getCurrentUser()).willReturn(currentUser);
         given(boardMemberRepository.findByUserIdAndBoardId(anyLong(), anyLong())).willReturn(Optional.ofNullable(currentBoardMember));
 
         // when
@@ -255,7 +255,7 @@ class BoardServiceTest {
                 .role(BoardMemberRole.MEMBER)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(currentUser);
+        given(userService.getCurrentUser()).willReturn(currentUser);
         given(boardMemberRepository.findByUserIdAndBoardId(anyLong(), anyLong())).willReturn(Optional.ofNullable(currentBoardMember));
         given(boardInvitationRepository.existsByBoardIdAndInviteeEmailAndStatus(anyLong(), anyString(), any()))
                 .willReturn( true);
@@ -275,7 +275,7 @@ class BoardServiceTest {
 
         // given
         given(boardInvitationRepository.findByUuid(anyString())).willReturn(Optional.ofNullable(boardInvitation));
-        given(authService.findByEmail(anyString())).willReturn(Optional.ofNullable(currentUser));
+        given(userService.findByEmail(anyString())).willReturn(Optional.ofNullable(currentUser));
 
         // when
         boardService.acceptInvitation(UUID.randomUUID().toString());
@@ -342,7 +342,7 @@ class BoardServiceTest {
 
         // given
         given(boardInvitationRepository.findByUuid(anyString())).willReturn(Optional.ofNullable(boardInvitation));
-        given(authService.findByEmail(anyString())).willReturn(Optional.empty());
+        given(userService.findByEmail(anyString())).willReturn(Optional.empty());
 
         // when
         assertThrows(ResourceNotFoundException.class, () -> boardService.acceptInvitation(UUID.randomUUID().toString()));

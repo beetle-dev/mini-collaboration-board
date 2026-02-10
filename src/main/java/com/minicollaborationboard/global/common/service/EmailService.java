@@ -1,4 +1,4 @@
-package com.minicollaborationboard.global.common;
+package com.minicollaborationboard.global.common.service;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

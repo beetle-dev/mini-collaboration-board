@@ -1,17 +1,14 @@
-package com.minicollaborationboard.domain.user.entity;
+package com.minicollaborationboard.domain.auth.entity;
 
-import com.minicollaborationboard.global.common.BaseEntity;
+import com.minicollaborationboard.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
-@ToString
 @Getter
-@Entity
 @Builder
-@RequiredArgsConstructor
-@AllArgsConstructor
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,3 +25,4 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 }
+

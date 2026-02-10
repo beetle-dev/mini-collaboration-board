@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers(PermitAuthPath.permitAuthPath.toArray(new String[0])).permitAll()
+                        .requestMatchers(PermitAuthPath.permitAuthPaths.toArray(new String[0])).permitAll()
                         .anyRequest().authenticated())
 
                 .addFilterBefore(jwtFilter, LoginFilter.class)

@@ -1,6 +1,6 @@
 package com.minicollaborationboard.domain.ticket.service;
 
-import com.minicollaborationboard.domain.auth.service.AuthService;
+import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.entity.Board;
 import com.minicollaborationboard.domain.board.entity.BoardMemberRole;
 import com.minicollaborationboard.domain.board.service.BoardService;
@@ -9,6 +9,7 @@ import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.minicollaborationboard.domain.ticket.entity.TicketStatus;
 import com.minicollaborationboard.domain.ticket.repository.TicketQueryRepository;
 import com.minicollaborationboard.domain.ticket.repository.TicketRepository;
+import com.minicollaborationboard.global.common.service.SequenceService;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,26 +22,27 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TicketService {
 
-    private final AuthService authService;
+    private final UserService userService;
     private final BoardService boardService;
     private final TicketRepository ticketRepository;
     private final TicketQueryRepository ticketQueryRepository;
+    private final SequenceService sequenceService;
 
     @Transactional
     public void createTicket(CreateTicketReqDto createTicketReqDto) {
 
-        Long userId = authService.getCurrentUser().getId();
+        Long userId = userService.getCurrentUser().getId();
         Long boardId = createTicketReqDto.getBoardId();
 
         Board board = boardService.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
-        boardService.increaseLastTicketSequence(boardId);
-        Long ticketSequence = boardService.getLastTicketSequence(boardId);
-
         String code = board.getCode();
 
-        String sequence = code + "_" + ticketSequence;
+        sequenceService.incrementSequence(code);
+        Long newSequence = sequenceService.findLastInsertId();
+
+        String sequence = code + "_" + newSequence;
 
         ticketRepository.save(Ticket.builder()
                         .title(createTicketReqDto.getTitle())
@@ -84,9 +86,9 @@ public class TicketService {
 
         Ticket ticket = findById(updateTicketReqDto.getTicketId());
 
-        Long userId = authService.getCurrentUser().getId();
+        Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.exsistByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+        if (!boardService.existByUserIdAndBoardId(ticket.getBoardId(), userId)) {
 
             throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
         }
@@ -104,9 +106,9 @@ public class TicketService {
 
         Ticket ticket = findById(updateTicketReqDto.getTicketId());
 
-        Long userId = authService.getCurrentUser().getId();
+        Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.exsistByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+        if (!boardService.existByUserIdAndBoardId(ticket.getBoardId(), userId)) {
 
             throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
         }
@@ -119,9 +121,9 @@ public class TicketService {
 
         Ticket ticket = findById(updateTicketReqDto.getTicketId());
 
-        Long userId = authService.getCurrentUser().getId();
+        Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.exsistByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+        if (!boardService.existByUserIdAndBoardId(ticket.getBoardId(), userId)) {
 
             throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
         }
@@ -134,7 +136,7 @@ public class TicketService {
 
         Ticket ticket = findById(ticketId);
 
-        Long userId = authService.getCurrentUser().getId();
+        Long userId = userService.getCurrentUser().getId();
 
         BoardMemberRole role = boardService.getBoardMemberRole(userId, ticket.getBoardId());
 

@@ -1,19 +1,16 @@
 package com.minicollaborationboard.domain.board.entity;
 
-import com.minicollaborationboard.global.common.BaseEntity;
+import com.minicollaborationboard.global.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
-@AllArgsConstructor
-@RequiredArgsConstructor
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class BoardInvitation extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

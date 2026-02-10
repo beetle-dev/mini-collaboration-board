@@ -2,9 +2,8 @@ package com.minicollaborationboard.domain.auth.service;
 
 import com.minicollaborationboard.domain.auth.dto.SignUpReqDto;
 import com.minicollaborationboard.domain.auth.repository.UserRepository;
-import com.minicollaborationboard.domain.user.entity.User;
+import com.minicollaborationboard.domain.auth.entity.User;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,8 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,7 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class UserServiceTest {
 
     @Mock
     UserRepository userRepository;
@@ -33,7 +30,7 @@ class AuthServiceTest {
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @InjectMocks
-    AuthService authService;
+    UserService userService;
 
     @Test
     void 정상_회원가입() {
@@ -49,7 +46,7 @@ class AuthServiceTest {
         given(bCryptPasswordEncoder.encode(anyString())).willReturn("encodedPassword");
 
         //when
-        authService.signUp(signUpReqDto);
+        userService.signUp(signUpReqDto);
 
         //then
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
@@ -79,9 +76,9 @@ class AuthServiceTest {
                 .willReturn(Boolean.FALSE)
                 .willReturn(Boolean.TRUE);
 
-        authService.signUp(signUpReqDto);
+        userService.signUp(signUpReqDto);
 
-        DuplicateResourceException e = assertThrows(DuplicateResourceException.class, () -> authService.signUp(signUpReqDto));
+        DuplicateResourceException e = assertThrows(DuplicateResourceException.class, () -> userService.signUp(signUpReqDto));
 
         //then
         verify(userRepository, times(1)).save(any(User.class));

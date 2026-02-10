@@ -4,15 +4,12 @@ import com.minicollaborationboard.domain.ticket.entity.TicketPriority;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Builder
-@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "티켓 생성 요청 DTO")
 public class CreateTicketReqDto {
 
