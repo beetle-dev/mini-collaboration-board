@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/ticket")
+@RequestMapping("/tickets")
 @RequiredArgsConstructor
 @Tag(name = "Ticket", description = "티켓 관리")
 public class TicketController {

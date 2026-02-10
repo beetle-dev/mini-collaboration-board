@@ -1,7 +1,7 @@
 package com.minicollaborationboard.global.security.jwt;
 
-import com.minicollaborationboard.domain.user.entity.Role;
-import com.minicollaborationboard.domain.user.entity.User;
+import com.minicollaborationboard.domain.auth.entity.Role;
+import com.minicollaborationboard.domain.auth.entity.User;
 import com.minicollaborationboard.global.security.constants.PermitAuthPath;
 import com.minicollaborationboard.global.security.dto.JwtClaims;
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
@@ -37,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        return PermitAuthPath.permitAuthPath.stream()
+        return PermitAuthPath.permitAuthPaths.stream()
                 .anyMatch(pattern -> antPathMatcher.match(pattern, path));
     }
 

@@ -1,6 +1,5 @@
 package com.minicollaborationboard.global.security.jwt;
 
-import com.minicollaborationboard.domain.user.entity.Role;
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
 import com.minicollaborationboard.global.security.handler.CustomAuthenticationFailureHandler;
 import jakarta.servlet.FilterChain;
@@ -11,7 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;

@@ -1,7 +1,6 @@
 package com.minicollaborationboard.domain.board.repository;
 
 import com.minicollaborationboard.domain.board.entity.BoardMember;
-import com.minicollaborationboard.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

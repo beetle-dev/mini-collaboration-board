@@ -2,10 +2,11 @@ package com.minicollaborationboard.domain.auth.service;
 
 import com.minicollaborationboard.domain.auth.dto.SignUpReqDto;
 import com.minicollaborationboard.domain.auth.repository.UserRepository;
-import com.minicollaborationboard.domain.user.entity.Role;
-import com.minicollaborationboard.domain.user.entity.User;
-import com.minicollaborationboard.domain.user.entity.UserStatus;
+import com.minicollaborationboard.domain.auth.entity.Role;
+import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.domain.auth.entity.UserStatus;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
+import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import com.minicollaborationboard.global.security.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +18,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -50,7 +51,7 @@ public class AuthService {
         User user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
         String userUuid = user.getUuid();
 
-        return userRepository.findByUuid(userUuid);
+        return userRepository.findByUuid(userUuid).orElseThrow(() -> new ResourceNotFoundException("유저를 찾을 수 없습니다. uuid = " + userUuid));
     }
 
     public Optional<User> findByEmail(String inviteeEmail) {

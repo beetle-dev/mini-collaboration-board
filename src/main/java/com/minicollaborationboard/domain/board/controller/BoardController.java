@@ -49,7 +49,7 @@ public class BoardController {
     @PostMapping("/{boardId}/invitation")
     @Operation(summary = "Create a invitation API", description = "보드 참가 여부, 중복 초대, 초대 권한을 검증하여 초대를 생성하고 초대 이메일을 전송합니다. 보드 멤버 권한이 MEMBER 이거나 ADMIN 유저가 ADMIN 유저를 초대할 경우 인가되지 않습니다.")
     public ResponseEntity<Void> createInvitation(@PathVariable Long boardId,
-                                                 @Valid @RequestBody CreateInvitationReqDto createInvitationReqDto) throws MessagingException {
+                                                 @Valid @RequestBody CreateInvitationReqDto createInvitationReqDto) {
 
         boardService.createInvitation(boardId, createInvitationReqDto);
 

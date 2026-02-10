@@ -1,9 +1,9 @@
 package com.minicollaborationboard.global.security;
 
 import com.minicollaborationboard.domain.auth.repository.UserRepository;
-import com.minicollaborationboard.domain.user.entity.Role;
-import com.minicollaborationboard.domain.user.entity.User;
-import com.minicollaborationboard.domain.user.entity.UserStatus;
+import com.minicollaborationboard.domain.auth.entity.Role;
+import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.domain.auth.entity.UserStatus;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.UUID;

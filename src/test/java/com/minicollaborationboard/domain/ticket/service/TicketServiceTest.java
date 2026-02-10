@@ -1,17 +1,15 @@
 package com.minicollaborationboard.domain.ticket.service;
 
-import com.minicollaborationboard.domain.auth.service.AuthService;
+import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.entity.Board;
 import com.minicollaborationboard.domain.board.entity.BoardMemberRole;
 import com.minicollaborationboard.domain.board.service.BoardService;
 import com.minicollaborationboard.domain.ticket.dto.CreateTicketReqDto;
-import com.minicollaborationboard.domain.ticket.dto.TicketResDto;
-import com.minicollaborationboard.domain.ticket.dto.TicketSearchDto;
 import com.minicollaborationboard.domain.ticket.dto.UpdateTicketReqDto;
 import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.minicollaborationboard.domain.ticket.repository.TicketQueryRepository;
 import com.minicollaborationboard.domain.ticket.repository.TicketRepository;
-import com.minicollaborationboard.domain.user.entity.User;
+import com.minicollaborationboard.domain.auth.entity.User;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +38,7 @@ class TicketServiceTest {
     TicketService ticketService;
 
     @Mock
-    AuthService authService;
+    UserService userService;
 
     @Mock
     BoardService boardService;
@@ -88,7 +84,7 @@ class TicketServiceTest {
                 .boardId(boardId)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(user);
+        given(userService.getCurrentUser()).willReturn(user);
         given(boardService.findById(boardId)).willReturn(Optional.of(board));
         given(boardService.getLastTicketSequence(boardId))
                 .willReturn(1L)
@@ -114,7 +110,7 @@ class TicketServiceTest {
                 .boardId(boardId)
                 .build();
 
-        given(authService.getCurrentUser()).willReturn(user);
+        given(userService.getCurrentUser()).willReturn(user);
         given(boardService.findById(anyLong())).willReturn(Optional.empty());
 
         // when
@@ -141,8 +137,8 @@ class TicketServiceTest {
         updateTicketReqDto.setTicketId(999L);
 
         given(ticketRepository.findById(anyLong())).willReturn(Optional.of(ticket));
-        given(authService.getCurrentUser()).willReturn(user);
-        given(boardService.exsistByUserIdAndBoardId(boardId, userId)).willReturn(false);
+        given(userService.getCurrentUser()).willReturn(user);
+        given(boardService.existByUserIdAndBoardId(boardId, userId)).willReturn(false);
 
         // when-then
         assertThrows(AccessDeniedException.class, () ->
@@ -154,7 +150,7 @@ class TicketServiceTest {
 
         // given
         given(ticketRepository.findById(anyLong())).willReturn(Optional.ofNullable(ticket));
-        given(authService.getCurrentUser()).willReturn(user);
+        given(userService.getCurrentUser()).willReturn(user);
         given(boardService.getBoardMemberRole(userId, boardId)).willReturn(BoardMemberRole.MEMBER);
 
         // when-then

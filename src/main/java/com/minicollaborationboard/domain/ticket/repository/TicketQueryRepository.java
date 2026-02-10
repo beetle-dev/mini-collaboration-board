@@ -36,7 +36,7 @@ public class TicketQueryRepository {
 
     private BooleanExpression sequenceEqualTo(String sequence) {
 
-        return !sequence.isBlank() ? ticket.sequence.eq(sequence) : null;
+        return (sequence != null && !sequence.isBlank()) ? ticket.sequence.eq(sequence) : null;
     }
 
     private BooleanExpression ticketIdEqualTo(Long ticketId) {

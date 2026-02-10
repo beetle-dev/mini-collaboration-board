@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Schema(description = "티켓 수정 요청 DTO")
 public class UpdateTicketReqDto {
 
-    @Getter @Setter
+    @Getter
     @NoArgsConstructor
     @Schema(description = "티켓 정보 수정 요청 DTO")
     public static class Info {
@@ -27,7 +27,7 @@ public class UpdateTicketReqDto {
         private TicketPriority priority;
     }
 
-    @Getter @Setter
+    @Getter
     @NoArgsConstructor
     @Schema(description = "티켓 담당자 수정 요청 DTO")
     public static class Assignee {
@@ -39,7 +39,7 @@ public class UpdateTicketReqDto {
         private Long assigneeId;
     }
 
-    @Getter @Setter
+    @Getter
     @NoArgsConstructor
     @Schema(description = "티켓 상태 수정 요청 DTO")
     public static class Status {

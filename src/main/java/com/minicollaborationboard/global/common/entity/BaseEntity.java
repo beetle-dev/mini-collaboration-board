@@ -1,4 +1,4 @@
-package com.minicollaborationboard.global.common;
+package com.minicollaborationboard.global.common.entity;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;

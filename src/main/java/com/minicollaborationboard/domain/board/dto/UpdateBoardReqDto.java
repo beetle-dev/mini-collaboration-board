@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 @Schema(description = "보드 수정 요청 DTO")
 public class UpdateBoardReqDto {

@@ -1,7 +1,7 @@
 package com.minicollaborationboard.global.security.dto;
 
-import com.minicollaborationboard.domain.user.entity.User;
-import com.minicollaborationboard.domain.user.entity.UserStatus;
+import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.domain.auth.entity.UserStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -9,13 +9,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
-@ToString
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
