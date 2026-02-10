@@ -1,11 +1,11 @@
 package com.minicollaborationboard.domain.board.service;
 
 import com.minicollaborationboard.domain.board.dto.InvitationEventReqDto;
-import com.minicollaborationboard.domain.board.entity.BoardInvitation;
-import com.minicollaborationboard.global.common.service.EmailService;
+import com.minicollaborationboard.global.common.service.EmailSender;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -16,8 +16,11 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class InvitationEventListener {
 
+    @Value("${aws.ses.from}")
+    private String from;
+
     private final BoardService boardService;
-    private final EmailService emailService;
+    private final EmailSender emailSender;
 
     private static final String EMAIL_SUBJECT = "Board 초대 메일";
 
@@ -114,10 +117,11 @@ public class InvitationEventListener {
                     "  </body>\n" +
                     "</html>\n";
 
-            emailService.sendHtmlMessage(inviteeEmail, EMAIL_SUBJECT, htmlBody);
+            emailSender.sendHtmlMessage(from, inviteeEmail, EMAIL_SUBJECT, htmlBody);
         } catch (Exception e) {
 
             log.error("초대 이메일 발송 실패: boardId = {}, email = {}", boardId, inviteeEmail);
+            log.error(e.getMessage());
         }
 
     }
