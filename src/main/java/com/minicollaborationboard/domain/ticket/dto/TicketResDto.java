@@ -1,5 +1,6 @@
 package com.minicollaborationboard.domain.ticket.dto;
 
+import com.minicollaborationboard.domain.comment.dto.CommentResDto;
 import com.minicollaborationboard.domain.ticket.entity.TicketPriority;
 import com.minicollaborationboard.domain.ticket.entity.TicketStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -25,4 +27,6 @@ public class TicketResDto {
     private Long createdBy;
     private TicketPriority priority;
     private TicketStatus status;
+
+    private List<CommentResDto> comments;
 }

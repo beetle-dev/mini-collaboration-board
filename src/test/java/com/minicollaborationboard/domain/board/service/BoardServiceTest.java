@@ -7,7 +7,6 @@ import com.minicollaborationboard.domain.board.repository.BoardInvitationReposit
 import com.minicollaborationboard.domain.board.repository.BoardMemberRepository;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
 import com.minicollaborationboard.domain.auth.entity.User;
-import com.minicollaborationboard.global.common.service.EmailService;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
 import com.minicollaborationboard.global.exception.ExpiredResourceException;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
@@ -49,9 +48,6 @@ class BoardServiceTest {
 
     @Mock
     BoardInvitationRepository boardInvitationRepository;
-
-    @Mock
-    EmailService emailService;
 
     Long boardId;
     Long currentUserId;

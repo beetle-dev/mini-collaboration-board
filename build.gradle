@@ -49,6 +49,9 @@ dependencies {
     annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
+
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'software.amazon.awssdk:ses:2.29.46'
 }
 
 tasks.named('test') {

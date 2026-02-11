@@ -1,10 +1,7 @@
 package com.minicollaborationboard.domain.comment.entity;
 
 import com.minicollaborationboard.global.common.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -17,7 +14,17 @@ public class Comment extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String content;
+
+    @Column(nullable = false)
     private Long authorId;
+
+    @Column(nullable = false)
     private Long ticketId;
+
+    public void updateContent(String content) {
+
+        this.content = content;
+    }
 }

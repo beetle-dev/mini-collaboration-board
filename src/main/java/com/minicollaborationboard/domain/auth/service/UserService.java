@@ -58,4 +58,10 @@ public class UserService {
 
         return userRepository.findByEmail(inviteeEmail);
     }
+
+    public User findById(Long userId) {
+
+        return userRepository.findById(userId).orElseThrow(() ->
+                new ResourceNotFoundException("유저를 찾을 수 없습니다."));
+    }
 }

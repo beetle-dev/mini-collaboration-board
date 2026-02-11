@@ -1,9 +1,14 @@
 package com.minicollaborationboard.domain.ticket.service;
 
+import com.minicollaborationboard.domain.auth.entity.User;
 import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.entity.Board;
 import com.minicollaborationboard.domain.board.entity.BoardMemberRole;
 import com.minicollaborationboard.domain.board.service.BoardService;
+import com.minicollaborationboard.domain.comment.dto.CommentResDto;
+import com.minicollaborationboard.domain.comment.entity.Comment;
+import com.minicollaborationboard.domain.comment.repository.CommentRepository;
+import com.minicollaborationboard.domain.comment.service.CommentService;
 import com.minicollaborationboard.domain.ticket.dto.*;
 import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.minicollaborationboard.domain.ticket.entity.TicketStatus;
@@ -27,6 +32,7 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketQueryRepository ticketQueryRepository;
     private final SequenceService sequenceService;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public void createTicket(CreateTicketReqDto createTicketReqDto) {
@@ -67,6 +73,8 @@ public class TicketService {
 
     private TicketResDto toTicketResDto(Ticket ticket) {
 
+        List<Comment> comments = commentRepository.findAllByTicketId(ticket.getId());
+
         return TicketResDto.builder()
                 .id(ticket.getId())
                 .title(ticket.getTitle())
@@ -78,6 +86,20 @@ public class TicketService {
                 .createdBy(ticket.getCreatedBy())
                 .priority(ticket.getPriority())
                 .status(ticket.getStatus())
+                .comments(comments.stream().map(this::toCommentResDto).toList())
+                .build();
+    }
+
+    public CommentResDto toCommentResDto(Comment comment) {
+
+        User user = userService.findById(comment.getAuthorId());
+
+        return CommentResDto.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .author(user.getName())
+                .createdAt(comment.getCreatedAt())
+                .updatedAt(comment.getUpdatedAt())
                 .build();
     }
 
@@ -88,7 +110,7 @@ public class TicketService {
 
         Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.existByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+        if (!boardService.existsBoardMemberByBoardIdAndUserId(ticket.getBoardId(), userId)) {
 
             throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
         }
@@ -108,7 +130,7 @@ public class TicketService {
 
         Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.existByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+        if (!boardService.existsBoardMemberByBoardIdAndUserId(ticket.getBoardId(), userId)) {
 
             throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
         }
@@ -123,7 +145,7 @@ public class TicketService {
 
         Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.existByUserIdAndBoardId(ticket.getBoardId(), userId)) {
+        if (!boardService.existsBoardMemberByBoardIdAndUserId(ticket.getBoardId(), userId)) {
 
             throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
         }
@@ -145,6 +167,7 @@ public class TicketService {
             throw new AccessDeniedException("티켓 삭제 권한이 없습니다.");
         }
 
+        commentRepository.deleteAllByTicketId(ticketId);
         ticketRepository.delete(ticket);
     }
 
