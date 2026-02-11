@@ -6,13 +6,14 @@ import com.minicollaborationboard.domain.board.entity.*;
 import com.minicollaborationboard.domain.board.repository.BoardInvitationRepository;
 import com.minicollaborationboard.domain.board.repository.BoardMemberRepository;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
+import com.minicollaborationboard.domain.comment.repository.CommentRepository;
+import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.minicollaborationboard.domain.ticket.repository.TicketRepository;
 import com.minicollaborationboard.domain.auth.entity.User;
 import com.minicollaborationboard.global.common.service.SequenceService;
 import com.minicollaborationboard.global.exception.DuplicateResourceException;
 import com.minicollaborationboard.global.exception.ExpiredResourceException;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,6 +38,7 @@ public class BoardService {
     private final TicketRepository ticketRepository;
     private final SequenceService sequenceService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final CommentRepository commentRepository;
 
     private static final int BOARD_INVITATION_EXPIRE_DAY = 3;
 
@@ -88,6 +91,7 @@ public class BoardService {
                 .build());
     }
 
+    @Transactional(readOnly = true)
     public Page<BoardResDto> getBoards(Long boardId, Pageable pageable) {
 
         Page<Board> boards = boardRepository.findBoards(boardId, pageable);
@@ -183,11 +187,6 @@ public class BoardService {
         return member.getRole();
     }
 
-    public Boolean existByUserIdAndBoardId(Long boardId, Long userId) {
-
-        return boardMemberRepository.existsByBoardIdAndUserId(boardId, userId);
-    }
-
     public Long getLastTicketSequence(Long boardId) {
 
         return boardRepository.getLastTicketSequenceByBoardId(boardId);
@@ -228,6 +227,9 @@ public class BoardService {
             throw new AccessDeniedException("보드 삭제 권한이 없습니다.");
         }
 
+        List<Ticket> ticketList = ticketRepository.findAllByBoardId(boardId);
+        ticketList.forEach(ticket -> commentRepository.deleteAllByTicketId(ticket.getId()));
+
         deleteInvitationAllByBoardId(boardId);
         ticketRepository.deleteAllByBoardId(boardId);
         boardMemberRepository.deleteAllByBoardId(boardId);
@@ -238,5 +240,15 @@ public class BoardService {
     private void deleteInvitationAllByBoardId(Long boardId) {
 
         boardInvitationRepository.deleteAllByBoardId(boardId);
+    }
+
+    public boolean existsById(Long boardId) {
+
+        return boardRepository.existsById(boardId);
+    }
+
+    public boolean existsBoardMemberByBoardIdAndUserId(Long id, Long userId) {
+
+        return boardMemberRepository.existsByBoardIdAndUserId(id, userId);
     }
 }

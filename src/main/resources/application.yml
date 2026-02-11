@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
@@ -35,4 +35,11 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
+
+aws:
+  ses:
+    access-key: AKIAUWGEF2VWYTFWBI5P
+    secret-key: 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
+    from: beetledev0043@gmail.com
+  region: ap-northeast-2
 
