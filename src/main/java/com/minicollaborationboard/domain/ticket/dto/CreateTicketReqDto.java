@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -20,6 +21,7 @@ public class CreateTicketReqDto {
     private Long boardId;
 
     private String description;
+    private MultipartFile file;
     private TicketPriority priority;
     private LocalDateTime dueDate;
     private Long assigneeId;

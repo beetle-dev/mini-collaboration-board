@@ -50,8 +50,10 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
 
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'software.amazon.awssdk:ses:2.29.46'
+    implementation platform("io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1")
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-sqs'
+
 }
 
 tasks.named('test') {

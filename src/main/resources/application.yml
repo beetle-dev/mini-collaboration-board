@@ -31,6 +31,11 @@ spring:
           timeout: 5000
           starttls.enable : true
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 logging:
   level:
     org.hibernate.SQL: DEBUG
@@ -43,3 +48,12 @@ aws:
     from: beetledev0043@gmail.com
   region: ap-northeast-2
 
+cloud:
+  aws:
+    s3:
+      bucket: minicollaborationboard-s3-bucket
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: AKIAUWGEF2VW5LDE6HTO
+      secret-key: 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
