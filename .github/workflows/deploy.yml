@@ -5,6 +5,13 @@ on:
     branches:
       - master
 
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: '배포를 진행하시겠습니까? (yes 입력)'
+        required: true
+        default: 'no'
+
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -22,6 +29,17 @@ jobs:
       # 1. 소스 체크아웃
       - name: Checkout source
         uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'corretto'  # amazoncorretto 사용 중이므로
+
+      - name: Build with Gradle
+        run: |
+          chmod +x gradlew
+          ./gradlew bootJar
 
       # 2. AWS 자격증명 설정
       - name: Configure AWS credentials
