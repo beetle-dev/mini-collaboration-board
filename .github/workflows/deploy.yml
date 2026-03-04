@@ -34,7 +34,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'corretto'  # amazoncorretto 사용 중이므로
+          distribution: 'corretto'
 
       - name: Build with Gradle
         run: |
@@ -73,7 +73,7 @@ jobs:
       - name: Download current task definition
         run: |
           aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_SERVICE }} \
+            --task-definition ${{ env.ECS_TASK_DEFINITION }} \
             --query taskDefinition \
             > task-definition.json
 
