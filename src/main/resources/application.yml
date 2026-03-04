@@ -1,13 +1,21 @@
 spring:
+  config:
+    import: aws-secretsmanager:mini-collaboration-board-db
+
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/miniBoard?useSSL=false&useUnicode=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: root
-    password: password
+    url: jdbc:mysql://${host}:${port}/${database}
+    username: ${db_username}
+    password: ${db_password}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
@@ -48,12 +56,15 @@ aws:
     from: beetledev0043@gmail.com
   region: ap-northeast-2
 
-cloud:
-  aws:
-    s3:
-      bucket: minicollaborationboard-s3-bucket
-    region:
-      static: ap-northeast-2
-    credentials:
-      access-key: AKIAUWGEF2VW5LDE6HTO
-      secret-key: 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
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+
+
+
