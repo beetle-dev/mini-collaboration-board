@@ -16,6 +16,7 @@ jobs:
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
+    environment: prod
 
     steps:
       # 1. 소스 체크아웃
