@@ -43,6 +43,11 @@ public class TicketService {
         Board board = boardService.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
+        if (createTicketReqDto.getFile() != null) {
+
+
+        }
+
         String code = board.getCode();
 
         sequenceService.incrementSequence(code);
