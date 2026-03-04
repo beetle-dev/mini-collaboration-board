@@ -18,6 +18,7 @@ env:
   ECS_CLUSTER: ${{ secrets.ECS_CLUSTER }}
   ECS_SERVICE: ${{ secrets.ECS_SERVICE }}
   CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
+  ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
 
 jobs:
   deploy:
