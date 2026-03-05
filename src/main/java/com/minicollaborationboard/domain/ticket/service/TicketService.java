@@ -43,8 +43,12 @@ public class TicketService {
         Board board = boardService.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
-        if (createTicketReqDto.getFile() != null) {
+        if (!boardService.existsBoardMemberByBoardIdAndUserId(boardId, userId)) {
 
+            throw new AccessDeniedException("티켓 생성 권한이 없습니다.");
+        }
+
+        if (createTicketReqDto.getFile() != null) {
 
         }
 
@@ -70,6 +74,14 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<TicketResDto> getTickets(TicketSearchDto ticketSearchDto) {
+
+        Long userId = userService.getCurrentUser().getId();
+        Long boardId = ticketSearchDto.getBoardId();
+
+        if (!boardService.existsBoardMemberByBoardIdAndUserId(boardId, userId)) {
+
+            throw new AccessDeniedException("티켓 조회 권한이 없습니다.");
+        }
 
         List<Ticket> tickets = ticketQueryRepository.findTickets(ticketSearchDto);
 

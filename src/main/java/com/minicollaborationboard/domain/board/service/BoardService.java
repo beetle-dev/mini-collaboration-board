@@ -94,7 +94,14 @@ public class BoardService {
     @Transactional(readOnly = true)
     public Page<BoardResDto> getBoards(Long boardId, Pageable pageable) {
 
-        Page<Board> boards = boardRepository.findBoards(boardId, pageable);
+        Long userId = userService.getCurrentUser().getId();
+
+        if (!boardMemberRepository.existsByBoardIdAndUserId(boardId, userId)) {
+
+            throw new AccessDeniedException("조회 권한이 없습니다.");
+        }
+
+        Page<Board> boards = boardRepository.findBoardById(boardId, pageable);
 
         return boards.map(this::toBoardResDto);
     }
@@ -182,7 +189,7 @@ public class BoardService {
     public BoardMemberRole getBoardMemberRole(Long userId, Long boardId) {
 
         BoardMember member = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(() ->
-                new ResourceNotFoundException("멤버를 찾을 수 없습니다."));
+                new ResourceNotFoundException("권한이 없습니다."));
 
         return member.getRole();
     }

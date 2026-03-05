@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class TicketController {
 
     @GetMapping
     @Operation(summary = "Get tickets", description = "검색 조건에 따라 전체 또는 특정 보드만을 반환합니다.")
-    public List<TicketResDto> getTickets(TicketSearchDto ticketSearchDto) {
+    public List<TicketResDto> getTickets(@ParameterObject TicketSearchDto ticketSearchDto) {
 
         return ticketService.getTickets(ticketSearchDto);
     }
