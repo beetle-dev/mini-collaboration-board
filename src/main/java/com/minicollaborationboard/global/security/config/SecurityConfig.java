@@ -1,5 +1,6 @@
 package com.minicollaborationboard.global.security.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.minicollaborationboard.global.security.constants.PermitAuthPath;
 import com.minicollaborationboard.global.security.handler.CustomAuthenticationFailureHandler;
 import com.minicollaborationboard.global.security.jwt.JwtFilter;
@@ -27,6 +28,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -57,7 +59,8 @@ public class SecurityConfig {
                 .addFilterAt(new LoginFilter(
                         authenticationConfiguration.getAuthenticationManager(),
                         jwtTokenProvider,
-                        customAuthenticationFailureHandler),
+                        customAuthenticationFailureHandler,
+                        objectMapper),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

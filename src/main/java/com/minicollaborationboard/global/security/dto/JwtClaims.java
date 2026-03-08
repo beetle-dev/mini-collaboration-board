@@ -10,6 +10,6 @@ import lombok.Getter;
 public class JwtClaims {
 
     private String uuid;
-    private String username;
+    private String email;
     private String role;
 }

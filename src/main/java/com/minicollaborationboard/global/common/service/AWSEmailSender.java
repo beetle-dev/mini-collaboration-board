@@ -1,12 +1,9 @@
 package com.minicollaborationboard.global.common.service;
 
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.*;
 
-@Service
 @RequiredArgsConstructor
 public class AWSEmailSender implements EmailSender {
 

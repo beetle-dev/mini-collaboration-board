@@ -1,10 +1,9 @@
 package com.minicollaborationboard.domain.comment.service;
 
-import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.domain.auth.service.AuthService;
 import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.entity.Board;
 import com.minicollaborationboard.domain.board.service.BoardService;
-import com.minicollaborationboard.domain.comment.dto.CommentResDto;
 import com.minicollaborationboard.domain.comment.dto.CreateCommentReqDto;
 import com.minicollaborationboard.domain.comment.dto.UpdateCommentReqDto;
 import com.minicollaborationboard.domain.comment.entity.Comment;
@@ -17,7 +16,6 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -28,6 +26,7 @@ public class CommentService {
     private final TicketService ticketService;
     private final BoardService boardService;
     private final CommentRepository commentRepository;
+    private final AuthService authService;
 
     @Transactional
     public void createComment(CreateCommentReqDto createCommentReqDto) {
@@ -37,7 +36,7 @@ public class CommentService {
         String content = createCommentReqDto.getContent();
         Long ticketId = createCommentReqDto.getTicketId();
 
-        validateBoardAndTicket(ticketId, userId);
+        validateBoardAndTicket(ticketId);
 
         commentRepository.save(Comment.builder()
                         .content(content)
@@ -46,7 +45,7 @@ public class CommentService {
                 .build());
     }
 
-    private void validateBoardAndTicket(Long ticketId, Long userId) {
+    private void validateBoardAndTicket(Long ticketId) {
 
         Ticket ticket = ticketService.findById(ticketId);
 
@@ -54,10 +53,7 @@ public class CommentService {
                 new ResourceNotFoundException("보드를 찾을 수 없습니다.")
         );
 
-        if (!boardService.existsBoardMemberByBoardIdAndUserId(board.getId(), userId)) {
-
-            throw new AccessDeniedException("접근 권한이 없습니다.");
-        }
+        authService.validateAccessPermission(board.getId());
     }
 
     @Transactional
@@ -68,7 +64,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
-        validateBoardAndTicket(comment.getTicketId(), userId);
+        validateBoardAndTicket(comment.getTicketId());
 
         if (!Objects.equals(userId, comment.getAuthorId())) {
 
@@ -86,7 +82,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
-        validateBoardAndTicket(comment.getTicketId(), userId);
+        validateBoardAndTicket(comment.getTicketId());
 
         if (!Objects.equals(userId, comment.getAuthorId())) {
 

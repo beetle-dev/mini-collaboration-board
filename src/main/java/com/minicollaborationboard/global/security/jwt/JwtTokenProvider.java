@@ -29,16 +29,16 @@ public class JwtTokenProvider {
 
         return JwtClaims.builder()
                 .uuid(payload.get("uuid", String.class))
-                .username(payload.get("username", String.class))
+                .email(payload.get("email", String.class))
                 .role(payload.get("role", String.class))
                 .build();
     }
 
-    public String createJwt(String uuid, String username, String role) {
+    public String createJwt(String uuid, String email, String role) {
 
         return Jwts.builder()
                 .claim("uuid", uuid)
-                .claim("username", username)
+                .claim("email", email)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + accessExpiration))

@@ -18,10 +18,14 @@ public class GlobalExceptionHandler {
 
         log.error("MethodArgumentNotValidException : " + e.getMessage());
 
+        var fields = e.getBindingResult().getFieldErrors().stream()
+                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+                .toList();
+
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .status(HttpStatus.CONFLICT.value())
+                .status(HttpStatus.BAD_REQUEST.value())
                 .code("VALIDATION_FAILED")
-                .message(e.getMessage())
+                .message(String.join(", ", fields))
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
