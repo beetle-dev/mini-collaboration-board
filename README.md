@@ -1,4 +1,4 @@
-# Mini-Collaboration-board (Mini Jira)
+# Mini-Collaboration-board (Mini Jira) [![Swagger](https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://beetledev.kr/swagger-ui/index.html)
 >팀 단위 스터디/업무를 위한 티켓 기반 협업 보드  
 >Spring Boot 기반 백엔드 API 서버
 ---
