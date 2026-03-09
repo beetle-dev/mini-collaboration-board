@@ -7,13 +7,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class GmailEmailSender implements EmailSender {
 
     private final JavaMailSender javaMailSender;
 
-    private final static String MAIL_SENDER = "shjang0043@gmail.com";
+    private final static String MAIL_SENDER = "***REMOVED***";
 
     @Override
     public void sendHtmlMessage(String from, String to, String subject, String htmlBody) throws MessagingException {

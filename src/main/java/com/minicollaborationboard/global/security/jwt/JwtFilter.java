@@ -60,7 +60,7 @@ public class JwtFilter extends OncePerRequestFilter {
             JwtClaims jwtClaims = jwtTokenProvider.validateToken(token);
 
             User user = User.builder()
-                    .email(jwtClaims.getUsername())
+                    .email(jwtClaims.getEmail())
                     .role(Role.valueOf(jwtClaims.getRole()))
                     .password(null)
                     .uuid(jwtClaims.getUuid())

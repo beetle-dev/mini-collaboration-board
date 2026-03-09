@@ -24,14 +24,14 @@ spring:
         format_sql: true
 
   jwt:
-    secret: 37qNKNvZ3i3dlxiEAEbPrgIEi2xpAI8LJkyTkIPZNg2 # todo AWS 처리
+    secret: ${jwt_secret}
     access-expiration: 36000000
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: shjang0043@gmail.com
-    password: rzdqhntwgfazabtl
+    username: ${mail_username}
+    password: ${mail_password}
     properties:
       mail:
         smtp:
@@ -51,10 +51,10 @@ logging:
 
 aws:
   ses:
-    access-key: AKIAUWGEF2VWYTFWBI5P
-    secret-key: 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
-    from: beetledev0043@gmail.com
-  region: ap-northeast-2
+    access-key: ${aws_ses_access_key}
+    secret-key: ${aws_ses_secret_key}
+    from: ${aws_ses_from}
+  region: ${aws_region}
 
 management:
   endpoints:
@@ -64,6 +64,9 @@ management:
   endpoint:
     health:
       show-details: never
+  health:
+    mail:
+      enabled: false
 
 
 

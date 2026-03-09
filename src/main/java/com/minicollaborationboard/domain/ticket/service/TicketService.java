@@ -1,14 +1,13 @@
 package com.minicollaborationboard.domain.ticket.service;
 
 import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.domain.auth.service.AuthService;
 import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.entity.Board;
-import com.minicollaborationboard.domain.board.entity.BoardMemberRole;
 import com.minicollaborationboard.domain.board.service.BoardService;
 import com.minicollaborationboard.domain.comment.dto.CommentResDto;
 import com.minicollaborationboard.domain.comment.entity.Comment;
 import com.minicollaborationboard.domain.comment.repository.CommentRepository;
-import com.minicollaborationboard.domain.comment.service.CommentService;
 import com.minicollaborationboard.domain.ticket.dto.*;
 import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.minicollaborationboard.domain.ticket.entity.TicketStatus;
@@ -17,7 +16,6 @@ import com.minicollaborationboard.domain.ticket.repository.TicketRepository;
 import com.minicollaborationboard.global.common.service.SequenceService;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +31,7 @@ public class TicketService {
     private final TicketQueryRepository ticketQueryRepository;
     private final SequenceService sequenceService;
     private final CommentRepository commentRepository;
+    private final AuthService authService;
 
     @Transactional
     public void createTicket(CreateTicketReqDto createTicketReqDto) {
@@ -43,16 +42,11 @@ public class TicketService {
         Board board = boardService.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
-        if (createTicketReqDto.getFile() != null) {
-
-
-        }
+        authService.validateAccessPermission(boardId);
 
         String code = board.getCode();
-
         sequenceService.incrementSequence(code);
         Long newSequence = sequenceService.findLastInsertId();
-
         String sequence = code + "_" + newSequence;
 
         ticketRepository.save(Ticket.builder()
@@ -70,6 +64,8 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<TicketResDto> getTickets(TicketSearchDto ticketSearchDto) {
+
+        authService.validateAccessPermission(ticketSearchDto.getBoardId());
 
         List<Ticket> tickets = ticketQueryRepository.findTickets(ticketSearchDto);
 
@@ -115,10 +111,7 @@ public class TicketService {
 
         Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.existsBoardMemberByBoardIdAndUserId(ticket.getBoardId(), userId)) {
-
-            throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
-        }
+        authService.validateAccessPermission(ticket.getBoardId());
 
         ticket.updateTicketInfo(
                 updateTicketReqDto.getTitle(),
@@ -135,10 +128,7 @@ public class TicketService {
 
         Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.existsBoardMemberByBoardIdAndUserId(ticket.getBoardId(), userId)) {
-
-            throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
-        }
+        authService.validateAccessPermission(ticket.getBoardId());
 
         ticket.updateTicketAssignee(updateTicketReqDto.getAssigneeId(), userId);
     }
@@ -150,10 +140,7 @@ public class TicketService {
 
         Long userId = userService.getCurrentUser().getId();
 
-        if (!boardService.existsBoardMemberByBoardIdAndUserId(ticket.getBoardId(), userId)) {
-
-            throw new AccessDeniedException("티켓 수정 권한이 없습니다.");
-        }
+        authService.validateAccessPermission(ticket.getBoardId());
 
         ticket.updateTicketStatus(updateTicketReqDto.getStatus(), userId);
     }
@@ -163,14 +150,7 @@ public class TicketService {
 
         Ticket ticket = findById(ticketId);
 
-        Long userId = userService.getCurrentUser().getId();
-
-        BoardMemberRole role = boardService.getBoardMemberRole(userId, ticket.getBoardId());
-
-        if (role == BoardMemberRole.MEMBER) {
-
-            throw new AccessDeniedException("티켓 삭제 권한이 없습니다.");
-        }
+        authService.validateUpdatePermission(ticket.getBoardId());
 
         commentRepository.deleteAllByTicketId(ticketId);
         ticketRepository.delete(ticket);

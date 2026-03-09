@@ -1,9 +1,7 @@
 package com.minicollaborationboard.domain.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,11 +11,16 @@ import lombok.NoArgsConstructor;
 public class SignUpReqDto {
 
     @NotBlank
+    @Email
     private String email;
 
-    @NotBlank
+    @NotEmpty
+    @Size(min = 8)
+    @Pattern(regexp = ".*[\\p{P}\\p{S}].*",
+            message = "비밀번호에 특수문자를 1개 이상 포함해야 합니다."
+    )
     private String password;
 
-    @NotNull
+    @NotEmpty
     private String name;
 }

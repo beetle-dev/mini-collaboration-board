@@ -1,5 +1,6 @@
 package com.minicollaborationboard.domain.board.service;
 
+import com.minicollaborationboard.domain.auth.service.AuthService;
 import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.dto.*;
 import com.minicollaborationboard.domain.board.entity.*;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +39,7 @@ public class BoardService {
     private final SequenceService sequenceService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CommentRepository commentRepository;
+    private final AuthService authService;
 
     private static final int BOARD_INVITATION_EXPIRE_DAY = 3;
 
@@ -94,7 +95,9 @@ public class BoardService {
     @Transactional(readOnly = true)
     public Page<BoardResDto> getBoards(Long boardId, Pageable pageable) {
 
-        Page<Board> boards = boardRepository.findBoards(boardId, pageable);
+        authService.validateAccessPermission(boardId);
+
+        Page<Board> boards = boardRepository.findById(boardId, pageable);
 
         return boards.map(this::toBoardResDto);
     }
@@ -114,17 +117,9 @@ public class BoardService {
     public void createInvitation(Long boardId, CreateInvitationReqDto createInvitationReqDto) {
 
         Long currentUserId = userService.getCurrentUser().getId();
-        BoardMember currentBoardMember = boardMemberRepository.findByUserIdAndBoardId(currentUserId, boardId)
-                .orElseThrow(() -> new ResourceNotFoundException("본인이 속하지 않은 보드에 초대할 수 없습니다."));
-
-        BoardMemberRole currentBoardMemberRole = currentBoardMember.getRole();
         BoardMemberRole inviteeBoardMemberRole = createInvitationReqDto.getRole();
 
-        if (currentBoardMemberRole == BoardMemberRole.MEMBER ||
-                (currentBoardMemberRole == BoardMemberRole.ADMIN && inviteeBoardMemberRole == BoardMemberRole.ADMIN)) {
-
-            throw new AccessDeniedException("초대 권한이 없습니다.");
-        }
+        authService.validateCreateInvitationPermission(boardId, inviteeBoardMemberRole);
 
         String inviteeEmail = createInvitationReqDto.getInviteeEmail();
 
@@ -179,14 +174,6 @@ public class BoardService {
         return boardRepository.findById(boardId);
     }
 
-    public BoardMemberRole getBoardMemberRole(Long userId, Long boardId) {
-
-        BoardMember member = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(() ->
-                new ResourceNotFoundException("멤버를 찾을 수 없습니다."));
-
-        return member.getRole();
-    }
-
     public Long getLastTicketSequence(Long boardId) {
 
         return boardRepository.getLastTicketSequenceByBoardId(boardId);
@@ -195,18 +182,10 @@ public class BoardService {
     @Transactional
     public void updateBoard(Long boardId, UpdateBoardReqDto updateBoardReqDto) {
 
-        Long userId = userService.getCurrentUser().getId();
-
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
-        BoardMember member = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(() ->
-                new AccessDeniedException("보드 접근 권한이 없습니다."));
-
-        if (member.getRole() == BoardMemberRole.MEMBER) {
-
-            throw new AccessDeniedException("보드 수정 권한이 없습니다.");
-        }
+        authService.validateUpdatePermission(boardId);
 
         board.updateName(updateBoardReqDto.getName());
     }
@@ -214,18 +193,10 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId) {
 
-        Long userId = userService.getCurrentUser().getId();
-
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
-        BoardMember member = boardMemberRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(() ->
-                new AccessDeniedException("보드 접근 권한이 없습니다."));
-
-        if (member.getRole() != BoardMemberRole.OWNER) {
-
-            throw new AccessDeniedException("보드 삭제 권한이 없습니다.");
-        }
+        authService.validateUpdatePermission(boardId);
 
         List<Ticket> ticketList = ticketRepository.findAllByBoardId(boardId);
         ticketList.forEach(ticket -> commentRepository.deleteAllByTicketId(ticket.getId()));
@@ -240,15 +211,5 @@ public class BoardService {
     private void deleteInvitationAllByBoardId(Long boardId) {
 
         boardInvitationRepository.deleteAllByBoardId(boardId);
-    }
-
-    public boolean existsById(Long boardId) {
-
-        return boardRepository.existsById(boardId);
-    }
-
-    public boolean existsBoardMemberByBoardIdAndUserId(Long id, Long userId) {
-
-        return boardMemberRepository.existsByBoardIdAndUserId(id, userId);
     }
 }

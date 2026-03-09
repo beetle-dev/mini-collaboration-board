@@ -38,8 +38,8 @@ public class BoardController {
     }
 
     @GetMapping
-    @Operation(summary = "Get boards", description = "boardId의 존재 유무에 따라 전체 또는 특정 보드만을 반환합니다.")
-    public Page<BoardResDto> getBoards(@RequestParam(required = false) Long boardId,
+    @Operation(summary = "Get boards", description = "boardId에 해당하는 특정 보드만을 반환합니다.")
+    public Page<BoardResDto> getBoards(@RequestParam Long boardId,
                                        @PageableDefault(size = 5, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
         return boardService.getBoards(boardId, pageable);

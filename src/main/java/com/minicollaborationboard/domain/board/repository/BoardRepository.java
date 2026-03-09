@@ -11,8 +11,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     boolean existsByName(String name);
 
-    @Query("SELECT b from Board b where (:boardId IS NULL OR b.id = :boardId)")
-    Page<Board> findBoards(@Param("boardId") Long boardId, Pageable pageable);
+    Page<Board> findById(@Param("boardId") Long boardId, Pageable pageable);
 
     @Query("select b.lastTicketSequence from Board b where b.id = :boardId")
     Long getLastTicketSequenceByBoardId(@Param("boardId") Long boardId);
