@@ -2,6 +2,9 @@ package com.minicollaborationboard.domain.comment.repository;
 
 import com.minicollaborationboard.domain.comment.entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -9,4 +12,10 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     List<Comment> findAllByTicketId(Long ticketId);
 
     void deleteAllByTicketId(Long ticketId);
+
+    List<Comment> findAllByTicketIdIn(List<Long> ticketIds);
+
+    @Modifying
+    @Query("delete from Comment c where c.ticketId in :ticketIds")
+    void deleteAllByTicketIds(@Param("ticketIds")List<Long> ticketIds);
 }

@@ -55,7 +55,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String token = jwtTokenProvider.createJwt(uuid, username, role);
 
-        // Filter이므로 ResponseEntity 대신 response에 직접 작성
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
 

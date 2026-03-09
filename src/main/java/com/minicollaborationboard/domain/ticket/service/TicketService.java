@@ -1,6 +1,7 @@
 package com.minicollaborationboard.domain.ticket.service;
 
 import com.minicollaborationboard.domain.auth.entity.User;
+import com.minicollaborationboard.domain.auth.repository.UserRepository;
 import com.minicollaborationboard.domain.auth.service.AuthService;
 import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.entity.Board;
@@ -19,7 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,7 @@ public class TicketService {
     private final SequenceService sequenceService;
     private final CommentRepository commentRepository;
     private final AuthService authService;
+    private final UserRepository userRepository;
 
     @Transactional
     public void createTicket(CreateTicketReqDto createTicketReqDto) {
@@ -68,8 +72,55 @@ public class TicketService {
         authService.validateAccessPermission(ticketSearchDto.getBoardId());
 
         List<Ticket> tickets = ticketQueryRepository.findTickets(ticketSearchDto);
+        List<Long> ticketIds = tickets.stream().map(Ticket::getId).toList();
 
-        return tickets.stream().map(this::toTicketResDto).toList();
+        List<Comment> comments = commentRepository.findAllByTicketIdIn(ticketIds);
+        Map<Long, List<Comment>> commentByTicketId = comments.stream()
+                .collect(Collectors.groupingBy(Comment::getTicketId));
+
+        Set<Long> authorIds = comments.stream().map(Comment::getAuthorId).collect(Collectors.toSet());
+        Map<Long, String> authorByUserId = userRepository.findAllById(authorIds).stream()
+                .collect(Collectors.toMap(User::getId, User::getName));
+
+        List<TicketResDto> ticketResDtos = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+
+            TicketResDto ticketResDto = TicketResDto.builder()
+                    .id(ticket.getId())
+                    .title(ticket.getTitle())
+                    .description(ticket.getDescription())
+                    .dueDate(ticket.getDueDate())
+                    .boardId(ticket.getBoardId())
+                    .assigneeId(ticket.getAssigneeId())
+                    .sequence(ticket.getSequence())
+                    .createdBy(ticket.getCreatedBy())
+                    .priority(ticket.getPriority())
+                    .status(ticket.getStatus())
+                    .build();
+
+            List<Comment> commentList = commentByTicketId.getOrDefault(ticket.getId(), List.of());
+
+            List<CommentResDto> commentResDtos = new ArrayList<>();
+
+            for (Comment comment : commentList) {
+
+                CommentResDto commentResDto = CommentResDto.builder()
+                        .id(comment.getId())
+                        .content(comment.getContent())
+                        .author(authorByUserId.getOrDefault(comment.getAuthorId(), ""))
+                        .createdAt(comment.getCreatedAt())
+                        .updatedAt(comment.getUpdatedAt())
+                        .build();
+
+                commentResDtos.add(commentResDto);
+            }
+
+            ticketResDto.setComments(commentResDtos);
+
+            ticketResDtos.add(ticketResDto);
+        }
+
+        return ticketResDtos;
     }
 
     private TicketResDto toTicketResDto(Ticket ticket) {

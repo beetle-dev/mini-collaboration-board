@@ -198,8 +198,12 @@ public class BoardService {
 
         authService.validateUpdatePermission(boardId);
 
-        List<Ticket> ticketList = ticketRepository.findAllByBoardId(boardId);
-        ticketList.forEach(ticket -> commentRepository.deleteAllByTicketId(ticket.getId()));
+        List<Long> ticketList = ticketRepository.findAllByBoardId(boardId).stream().map(Ticket::getId).toList();
+
+        if (!ticketList.isEmpty()) {
+
+            commentRepository.deleteAllByTicketIds(ticketList);
+        }
 
         deleteInvitationAllByBoardId(boardId);
         ticketRepository.deleteAllByBoardId(boardId);
