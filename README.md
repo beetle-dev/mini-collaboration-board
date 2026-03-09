@@ -78,7 +78,7 @@ User ──< BoardMember >── Board
 | **Ticket** | 업무/할 일의 최소 단위. 상태 전환 규칙, 담당자, 우선순위, 마감일 관리 |
 | **Comment** | 티켓에 대한 의견 기록. 작성자 및 내용 관리 |
 ### 🔹ERD
-
+![mini-collaboration-board.png](docs%2Ferd%2Fmini-collaboration-board.png)
 ---
 ## 5️⃣배포 & 운영
 ### 🔹AWS 아키텍쳐
