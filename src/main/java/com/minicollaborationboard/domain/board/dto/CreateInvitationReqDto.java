@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Schema(description = "보드 초대 생성 요청 DTO")
-public class CreateInvitationReqDto {
+public class    CreateInvitationReqDto {
 
     @NotEmpty
     @Email

@@ -77,6 +77,16 @@ User ──< BoardMember >── Board
 | **BoardMember** | User ↔ Board 간 다대다 관계를 해소하는 중간 도메인. 역할 정보 포함 |
 | **Ticket** | 업무/할 일의 최소 단위. 상태 전환 규칙, 담당자, 우선순위, 마감일 관리 |
 | **Comment** | 티켓에 대한 의견 기록. 작성자 및 내용 관리 |
+### 🔹권한(OWNER / ADMIN / MEMBER) 모델링
+| 항목 | OWNER | ADMIN | MEMBER |
+|------|:-----:|:-----:|:------:|
+| Board 수정 | ✅ | ✅ | ❌ |
+| Board 삭제 | ✅ | ❌ | ❌ |
+| Ticket CRU | ✅ | ✅ | ✅ |
+| Ticket D | ✅ | ✅ | ❌ |
+| BoardMember(MEMBER) 초대 | ✅ | ✅ | ❌ |
+| BoardMember(ADMIN) 초대 | ✅ | ❌ | ❌ |
+| ADMIN 권한 부여 | ✅ | ❌ | ❌ |
 ### 🔹ERD
 ![mini-collaboration-board.png](docs%2Ferd%2Fmini-collaboration-board.png)
 ---
@@ -112,3 +122,4 @@ GitHub Actions (CI)
 - **프론트엔드 구현** — React 또는 Vue.js를 활용한 UI 개발
 - **테스트 커버리지 확보** — 단위 테스트 및 통합 테스트 추가
 - **티켓 상태 전환** - 티켓 상태를 정해진 플로우에 따라서만 전환 가능하도록 강제
+- **Refresh Token 추가**

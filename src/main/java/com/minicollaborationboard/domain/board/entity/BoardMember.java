@@ -21,4 +21,9 @@ public class BoardMember {
     private Long boardId;
     private Long userId;
     private LocalDateTime joinedAt;
+
+    public void updateBoardMemberRole(BoardMemberRole role) {
+
+        this.role = role;
+    }
 }

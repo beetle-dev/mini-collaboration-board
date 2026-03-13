@@ -59,17 +59,13 @@ public class CommentService {
     @Transactional
     public void updateComment(Long commentId, UpdateCommentReqDto updateCommentReqDto) {
 
-        Long userId = userService.getCurrentUser().getId();
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
         validateBoardAndTicket(comment.getTicketId());
 
-        if (!Objects.equals(userId, comment.getAuthorId())) {
-
-            throw new AccessDeniedException("수정 권한이 없습니다.");
-        }
+        authService.validateUpdateCommentPermission(comment.getAuthorId());
 
         comment.updateContent(updateCommentReqDto.getContent());
     }
@@ -77,17 +73,13 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long commentId) {
 
-        Long userId = userService.getCurrentUser().getId();
 
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new ResourceNotFoundException("댓글을 찾을 수 없습니다."));
 
         validateBoardAndTicket(comment.getTicketId());
 
-        if (!Objects.equals(userId, comment.getAuthorId())) {
-
-            throw new AccessDeniedException("삭제 권한이 없습니다.");
-        }
+        authService.validateUpdateCommentPermission(comment.getAuthorId());
 
         commentRepository.deleteById(commentId);
     }

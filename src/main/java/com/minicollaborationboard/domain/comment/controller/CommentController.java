@@ -29,7 +29,7 @@ public class CommentController {
     }
 
     @PatchMapping("/{commentId}")
-    @Operation(summary = "update a comment", description = "권한 검사 후 댓글이 수정됩니다.")
+    @Operation(summary = "Update a comment", description = "권한 검사 후 댓글이 수정됩니다.")
     public ResponseEntity<Void> updateComment(@PathVariable("commentId") Long commentId,
                                               @Valid @RequestBody UpdateCommentReqDto updateCommentReqDto) {
 
@@ -39,7 +39,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{commentId}")
-    @Operation(summary = "update a comment", description = "권한 검사 후 댓글이 삭제됩니다.")
+    @Operation(summary = "Delete a comment", description = "권한 검사 후 댓글이 삭제됩니다.")
     public ResponseEntity<Void> deleteComment(@PathVariable("commentId") Long commentId) {
 
         commentService.deleteComment(commentId);

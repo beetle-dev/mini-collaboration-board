@@ -1,6 +1,7 @@
-package com.minicollaborationboard.domain.board.service;
+package com.minicollaborationboard.domain.board.listener;
 
-import com.minicollaborationboard.domain.board.dto.InvitationEventReqDto;
+import com.minicollaborationboard.domain.board.event.InvitationEvent;
+import com.minicollaborationboard.domain.board.service.BoardService;
 import com.minicollaborationboard.global.common.service.EmailSender;
 import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,9 @@ public class InvitationEventListener {
     @Value("${aws.ses.from}")
     private String from;
 
+    @Value("${app.base-url}")
+    private String appBaseUrl;
+
     private final BoardService boardService;
     private final EmailSender emailSender;
 
@@ -26,15 +30,19 @@ public class InvitationEventListener {
 
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleInvitationCreated(InvitationEventReqDto invitationEventReqDto) {
+    public void handleInvitationCreated(InvitationEvent invitationEvent) {
 
-        Long boardId = invitationEventReqDto.getBoardId();
-        String inviteeEmail = invitationEventReqDto.getInviteeEmail();
+        Long boardId = invitationEvent.getBoardId();
+        String inviteeEmail = invitationEvent.getInviteeEmail();
+        String invitationUuid = invitationEvent.getInvitationUuid();
+
+        String inviteLink = appBaseUrl + "/boards/invitation/" + invitationUuid + "/accept";
 
         try {
 
             String boardName = boardService.findById(boardId).orElseThrow(() ->
                     new ResourceNotFoundException("보드를 찾을 수 없습니다.")).getName();
+
             String htmlBody = "<!DOCTYPE html>\n" +
                     "<html>\n" +
                     "  <body style=\"margin:0; padding:0; background-color:#f4f6f8; font-family: Arial, Helvetica, sans-serif;\">\n" +
@@ -116,6 +124,8 @@ public class InvitationEventListener {
                     "    </table>\n" +
                     "  </body>\n" +
                     "</html>\n";
+
+            htmlBody = htmlBody.replace("{{inviteLink}}", inviteLink);
 
             emailSender.sendHtmlMessage(from, inviteeEmail, EMAIL_SUBJECT, htmlBody);
         } catch (Exception e) {

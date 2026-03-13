@@ -1,10 +1,10 @@
 package com.minicollaborationboard.domain.board.controller;
 
-import com.minicollaborationboard.domain.board.dto.BoardResDto;
-import com.minicollaborationboard.domain.board.dto.CreateBoardReqDto;
-import com.minicollaborationboard.domain.board.dto.CreateInvitationReqDto;
-import com.minicollaborationboard.domain.board.dto.UpdateBoardReqDto;
+import com.minicollaborationboard.domain.board.dto.*;
 import com.minicollaborationboard.domain.board.service.BoardService;
+import com.minicollaborationboard.global.exception.DuplicateResourceException;
+import com.minicollaborationboard.global.exception.ExpiredResourceException;
+import com.minicollaborationboard.global.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,6 +18,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.net.URI;
 
 @RestController
 @RequestMapping("/boards")
@@ -38,11 +39,12 @@ public class BoardController {
     }
 
     @GetMapping
-    @Operation(summary = "Get boards", description = "boardId에 해당하는 특정 보드만을 반환합니다.")
-    public Page<BoardResDto> getBoards(@RequestParam Long boardId,
+    @Operation(summary = "Get boards", description = "boardId/boardName으로 조회할 수 있습니다. 둘 다 없으면 현재 유저가 속한 보드만 조회합니다.")
+    public Page<BoardResDto> getBoards(@RequestParam(required = false) Long boardId,
+                                       @RequestParam(required = false) String boardName,
                                        @PageableDefault(size = 5, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable) {
 
-        return boardService.getBoards(boardId, pageable);
+        return boardService.getBoards(boardId, boardName, pageable);
     }
 
     @PostMapping("/{boardId}/invitation")
@@ -55,13 +57,26 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PostMapping("/invitation/{uuid}/accept")
+    @GetMapping("/invitation/{uuid}/accept")
     @Operation(summary = "Accept a invitation API", description = "초대 유효성 검사 진행 후 초대 상태를 변경하고 보드 멤버를 생성합니다.")
     public ResponseEntity<Void> acceptInvitation(@PathVariable String uuid) {
 
-        boardService.acceptInvitation(uuid);
+        try {
+            boardService.acceptInvitation(uuid);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+            URI redirectUri = URI.create("/invitation/accepted.html");
+
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(redirectUri)
+                    .build();
+        } catch (DuplicateResourceException | ExpiredResourceException | ResourceNotFoundException e) {
+
+            URI redirectUri = URI.create("/invitation/accept-error.html");
+
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(redirectUri)
+                    .build();
+        }
     }
 
     @PatchMapping("/{boardId}")
@@ -79,6 +94,17 @@ public class BoardController {
     public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
 
         boardService.deleteBoard(boardId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{boardId}/boardmember")
+    @Operation(summary = "Update a board member's role", description = "Board의 OWNER만 BoardMember의 Role을 변경할 수 있습니다.")
+    public ResponseEntity<Void> updateBoardMemberRole(
+            @PathVariable("boardId") Long boardId,
+            @RequestBody UpdateBoardMemberRoleReqDto updateBoardMemberRoleReqDto) {
+
+        boardService.updateBoardMemberRole(boardId, updateBoardMemberRoleReqDto);
 
         return ResponseEntity.noContent().build();
     }

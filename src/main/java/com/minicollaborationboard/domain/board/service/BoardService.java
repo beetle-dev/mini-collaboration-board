@@ -4,6 +4,7 @@ import com.minicollaborationboard.domain.auth.service.AuthService;
 import com.minicollaborationboard.domain.auth.service.UserService;
 import com.minicollaborationboard.domain.board.dto.*;
 import com.minicollaborationboard.domain.board.entity.*;
+import com.minicollaborationboard.domain.board.event.InvitationEvent;
 import com.minicollaborationboard.domain.board.repository.BoardInvitationRepository;
 import com.minicollaborationboard.domain.board.repository.BoardMemberRepository;
 import com.minicollaborationboard.domain.board.repository.BoardRepository;
@@ -31,15 +32,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final BoardRepository boardRepository;
     private final UserService userService;
+    private final AuthService authService;
+    private final BoardRepository boardRepository;
     private final BoardMemberRepository boardMemberRepository;
     private final BoardInvitationRepository boardInvitationRepository;
     private final TicketRepository ticketRepository;
+    private final CommentRepository commentRepository;
     private final SequenceService sequenceService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final CommentRepository commentRepository;
-    private final AuthService authService;
 
     private static final int BOARD_INVITATION_EXPIRE_DAY = 3;
 
@@ -93,11 +94,30 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public Page<BoardResDto> getBoards(Long boardId, Pageable pageable) {
+    public Page<BoardResDto> getBoards(Long boardId, String boardName, Pageable pageable) {
 
-        authService.validateAccessPermission(boardId);
+        if (boardId != null) {
+            authService.validateAccessPermission(boardId);
 
-        Page<Board> boards = boardRepository.findById(boardId, pageable);
+            Page<Board> boards = boardRepository.findById(boardId, pageable);
+
+            return boards.map(this::toBoardResDto);
+        }
+
+        Long currentUserId = userService.getCurrentUser().getId();
+        List<Long> boardIds = boardMemberRepository.findBoardIdsByUserId(currentUserId);
+
+        if (boardIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        Page<Board> boards;
+
+        if (boardName != null && !boardName.isBlank()) {
+            boards = boardRepository.findByIdInAndNameContainingIgnoreCase(boardIds, boardName, pageable);
+        } else {
+            boards = boardRepository.findByIdIn(boardIds, pageable);
+        }
 
         return boards.map(this::toBoardResDto);
     }
@@ -128,7 +148,7 @@ public class BoardService {
             throw new DuplicateResourceException("해당 보드에 이미 초대된 유저입니다.");
         }
 
-        boardInvitationRepository.save(BoardInvitation.builder()
+        BoardInvitation invitation = boardInvitationRepository.save(BoardInvitation.builder()
                 .boardId(boardId)
                 .inviterId(currentUserId)
                 .inviteeEmail(inviteeEmail)
@@ -138,7 +158,7 @@ public class BoardService {
                 .expiredAt(LocalDateTime.now().plusDays(BOARD_INVITATION_EXPIRE_DAY))
                 .build());
 
-        applicationEventPublisher.publishEvent(new InvitationEventReqDto(boardId, inviteeEmail));
+        applicationEventPublisher.publishEvent(new InvitationEvent(boardId, inviteeEmail, invitation.getUuid()));
     }
 
     @Transactional
@@ -196,7 +216,7 @@ public class BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow(() ->
                 new ResourceNotFoundException("보드를 찾을 수 없습니다."));
 
-        authService.validateUpdatePermission(boardId);
+        authService.validateDeletePermission(boardId);
 
         List<Long> ticketList = ticketRepository.findAllByBoardId(boardId).stream().map(Ticket::getId).toList();
 
@@ -215,5 +235,23 @@ public class BoardService {
     private void deleteInvitationAllByBoardId(Long boardId) {
 
         boardInvitationRepository.deleteAllByBoardId(boardId);
+    }
+
+    public void updateBoardMemberRole(Long boardId, UpdateBoardMemberRoleReqDto updateBoardMemberRoleReqDto) {
+
+        Long currentUserId = userService.getCurrentUser().getId();
+
+        BoardMember currentBoardMember = boardMemberRepository.findByUserIdAndBoardId(currentUserId, boardId).orElseThrow(
+                ()-> new IllegalArgumentException("접근 권한이 없습니다."));
+
+        if (currentBoardMember.getRole() != BoardMemberRole.OWNER) {
+
+            throw new IllegalArgumentException("해당 권한이 없습니다.");
+        }
+
+        BoardMember boardMember = boardMemberRepository.findById(updateBoardMemberRoleReqDto.getBoardMemberId()).orElseThrow(
+                () -> new ResourceNotFoundException("보드멤버를 찾을 수 없습니다."));
+
+        boardMember.updateBoardMemberRole(updateBoardMemberRoleReqDto.getChangeTo());
     }
 }

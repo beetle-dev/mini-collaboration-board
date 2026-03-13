@@ -1,5 +1,7 @@
 package com.minicollaborationboard.domain.ticket.dto;
 
+import com.minicollaborationboard.domain.ticket.entity.TicketOrderBy;
+import com.minicollaborationboard.domain.ticket.entity.TicketPriority;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -13,4 +15,7 @@ public class TicketSearchDto {
     private Long ticketId;
     private String sequence;
     private Long assigneeId;
+    private TicketPriority ticketPriority;
+
+    private TicketOrderBy orderBy;
 }

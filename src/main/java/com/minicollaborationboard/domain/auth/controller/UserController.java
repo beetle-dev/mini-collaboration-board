@@ -1,6 +1,7 @@
 package com.minicollaborationboard.domain.auth.controller;
 
 import com.minicollaborationboard.domain.auth.dto.SignUpReqDto;
+import com.minicollaborationboard.domain.auth.dto.UpdateUserStatusReqDto;
 import com.minicollaborationboard.domain.auth.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,10 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +36,16 @@ public class UserController {
             @RequestParam String username,
             @RequestParam String password
     ) {
+    }
+
+    @Operation(summary = "유저 상태 변경", description = "유저 상태를 ACTIVE/BLOCKED/WITHDRAW 중 하나로 변경합니다. WITHDRAW 상태는 다른 상태로 변경이 불가합니다.")
+    @PatchMapping("/user/{uuid}/status")
+    public ResponseEntity<Void> updateUserStatus(
+            @PathVariable("uuid") String uuid,
+            @RequestBody UpdateUserStatusReqDto updateUserStatusReqDto) {
+
+        userService.updateUserStatus(uuid, updateUserStatusReqDto);
+
+        return ResponseEntity.noContent().build();
     }
 }

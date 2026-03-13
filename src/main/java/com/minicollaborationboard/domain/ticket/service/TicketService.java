@@ -123,38 +123,6 @@ public class TicketService {
         return ticketResDtos;
     }
 
-    private TicketResDto toTicketResDto(Ticket ticket) {
-
-        List<Comment> comments = commentRepository.findAllByTicketId(ticket.getId());
-
-        return TicketResDto.builder()
-                .id(ticket.getId())
-                .title(ticket.getTitle())
-                .description(ticket.getDescription())
-                .dueDate(ticket.getDueDate())
-                .boardId(ticket.getBoardId())
-                .assigneeId(ticket.getAssigneeId())
-                .sequence(ticket.getSequence())
-                .createdBy(ticket.getCreatedBy())
-                .priority(ticket.getPriority())
-                .status(ticket.getStatus())
-                .comments(comments.stream().map(this::toCommentResDto).toList())
-                .build();
-    }
-
-    public CommentResDto toCommentResDto(Comment comment) {
-
-        User user = userService.findById(comment.getAuthorId());
-
-        return CommentResDto.builder()
-                .id(comment.getId())
-                .content(comment.getContent())
-                .author(user.getName())
-                .createdAt(comment.getCreatedAt())
-                .updatedAt(comment.getUpdatedAt())
-                .build();
-    }
-
     @Transactional
     public void updateTicketInfo(UpdateTicketReqDto.Info updateTicketReqDto) {
 
