@@ -47,7 +47,10 @@ aws:
   region: ${aws_region}
 
 app:
-  base-url: http://localhost:8080
+  base-url: https://beetledev.kr/
+  cors:
+    allowed-origins:
+      - https://beetledev.kr/
 
 logging:
   level:
