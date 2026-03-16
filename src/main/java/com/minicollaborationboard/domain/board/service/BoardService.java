@@ -237,6 +237,7 @@ public class BoardService {
         boardInvitationRepository.deleteAllByBoardId(boardId);
     }
 
+    @Transactional
     public void updateBoardMemberRole(Long boardId, UpdateBoardMemberRoleReqDto updateBoardMemberRoleReqDto) {
 
         Long currentUserId = userService.getCurrentUser().getId();
