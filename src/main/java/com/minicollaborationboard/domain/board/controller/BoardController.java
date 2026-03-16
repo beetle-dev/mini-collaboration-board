@@ -2,9 +2,9 @@ package com.minicollaborationboard.domain.board.controller;
 
 import com.minicollaborationboard.domain.board.dto.*;
 import com.minicollaborationboard.domain.board.service.BoardService;
-import com.minicollaborationboard.global.exception.DuplicateResourceException;
-import com.minicollaborationboard.global.exception.ExpiredResourceException;
-import com.minicollaborationboard.global.exception.ResourceNotFoundException;
+import com.minicollaborationboard.exception.DuplicateResourceException;
+import com.minicollaborationboard.exception.ExpiredResourceException;
+import com.minicollaborationboard.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

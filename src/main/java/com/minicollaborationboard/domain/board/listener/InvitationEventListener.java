@@ -2,8 +2,8 @@ package com.minicollaborationboard.domain.board.listener;
 
 import com.minicollaborationboard.domain.board.event.InvitationEvent;
 import com.minicollaborationboard.domain.board.service.BoardService;
-import com.minicollaborationboard.global.common.service.EmailSender;
-import com.minicollaborationboard.global.exception.ResourceNotFoundException;
+import com.minicollaborationboard.common.service.EmailSender;
+import com.minicollaborationboard.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

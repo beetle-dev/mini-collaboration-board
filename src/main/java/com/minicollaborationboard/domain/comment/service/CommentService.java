@@ -10,7 +10,7 @@ import com.minicollaborationboard.domain.comment.entity.Comment;
 import com.minicollaborationboard.domain.comment.repository.CommentRepository;
 import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.minicollaborationboard.domain.ticket.service.TicketService;
-import com.minicollaborationboard.global.exception.ResourceNotFoundException;
+import com.minicollaborationboard.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;

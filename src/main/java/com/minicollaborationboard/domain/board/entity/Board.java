@@ -1,6 +1,6 @@
 package com.minicollaborationboard.domain.board.entity;
 
-import com.minicollaborationboard.global.common.entity.BaseEntity;
+import com.minicollaborationboard.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

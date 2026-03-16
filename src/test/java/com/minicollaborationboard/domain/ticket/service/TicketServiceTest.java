@@ -10,7 +10,7 @@ import com.minicollaborationboard.domain.ticket.entity.Ticket;
 import com.minicollaborationboard.domain.ticket.repository.TicketQueryRepository;
 import com.minicollaborationboard.domain.ticket.repository.TicketRepository;
 import com.minicollaborationboard.domain.auth.entity.User;
-import com.minicollaborationboard.global.exception.ResourceNotFoundException;
+import com.minicollaborationboard.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,6 +1,6 @@
 package com.minicollaborationboard.domain.comment.entity;
 
-import com.minicollaborationboard.global.common.entity.BaseEntity;
+import com.minicollaborationboard.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

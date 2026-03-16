@@ -3,7 +3,7 @@ package com.minicollaborationboard.domain.auth.service;
 import com.minicollaborationboard.domain.auth.dto.SignUpReqDto;
 import com.minicollaborationboard.domain.auth.repository.UserRepository;
 import com.minicollaborationboard.domain.auth.entity.User;
-import com.minicollaborationboard.global.exception.DuplicateResourceException;
+import com.minicollaborationboard.exception.DuplicateResourceException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
