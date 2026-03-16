@@ -39,18 +39,15 @@ spring:
           timeout: 5000
           starttls.enable : true
 
+app:
+  base-url: https://beetledev.kr
+
 aws:
   ses:
     access-key: ${aws_ses_access_key}
     secret-key: ${aws_ses_secret_key}
     from: ${aws_ses_from}
   region: ${aws_region}
-
-app:
-  base-url: https://beetledev.kr/
-  cors:
-    allowed-origins:
-      - https://beetledev.kr/
 
 logging:
   level:
